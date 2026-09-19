@@ -1,0 +1,617 @@
+/* ============================================================================
+   w_chat — Wraith Core & w_creators Authentic RedM Theme
+   Authentic RDR2 texture masks, monochrome palette, and left-center placement.
+   ============================================================================ */
+
+/* ── Fonts ────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "RDR Lino";
+  src: url("fonts/RDRLino-Regular.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Hapna Slab";
+  src: url("fonts/HapnaSlabSerif-DemiBold.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "RDR Catalogue";
+  src: url("fonts/RDRCatalogueBold-Bold.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("fonts/NotoSansArabic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tajawal";
+  font-weight: 400;
+  src: url("fonts/tajawal-arabic-400-normal.woff2") format("woff2"),
+       url("fonts/tajawal-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tajawal";
+  font-weight: 500;
+  src: url("fonts/tajawal-arabic-500-normal.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tajawal";
+  font-weight: 700;
+  src: url("fonts/tajawal-arabic-700-normal.woff2") format("woff2"),
+       url("fonts/tajawal-latin-700-normal.woff2") format("woff2");
+  font-display: swap;
+}
+
+/* ── Palette Tokens matching w_creators exactly ───────────────────────────── */
+:root {
+  --wc-panel: #0b0b0b;
+  --wc-plate: #1f1f1f;
+  --wc-text: #fff;
+  --wc-dim: #a9a9a9;
+  --wc-accent: #ededed;
+  --wc-line: #ffffff24;
+  --wc-line-strong: #ffffff4d;
+  --wc-red: #cb0101;
+  --font-body: 'Hapna Slab', 'Tajawal', 'Noto Sans Arabic', Georgia, serif;
+  --font-display: 'RDR Lino', 'Tajawal', 'Noto Sans Arabic', Georgia, serif;
+  --font-number: 'RDR Catalogue', 'Tajawal', Georgia, serif;
+  --panel-fill: radial-gradient(130% 90% at 50% 0%, #1c1c1c 0%, #111111 42%, #080808 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent !important;
+  color: var(--wc-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Custom Sleek Scrollbar without ugly arrows ───────────────────────────── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(237, 237, 237, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(237, 237, 237, 0.6);
+}
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0;
+  height: 0;
+}
+
+/* ── Positioning: Far left, raised slightly above middle ─────────────────── */
+.chat-viewport {
+  position: absolute;
+  left: 28px;
+  bottom: 52vh;
+  width: clamp(360px, 30vw, 500px);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ── Messages Container ──────────────────────────────────────────────────── */
+.chat-messages-wrap {
+  position: relative;
+  width: 100%;
+  max-height: 38vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+  pointer-events: auto;
+}
+
+.chat-messages-wrap.is-idle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-inline-end: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(237, 237, 237, 0.3) transparent;
+}
+
+/* ── Individual Message Card (RDR2 torn paper plate) ──────────────────────── */
+.chat-message {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 16px 10px;
+  background: none;
+  border: none;
+  animation: messageSlide 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+  direction: rtl;
+  text-align: right;
+  isolation: isolate;
+}
+
+/* RDR2 Ragged / Torn ink outline for messages */
+.chat-message::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(130% 90% at 50% 0%, rgba(24, 24, 24, 0.94) 0%, rgba(12, 12, 12, 0.97) 100%);
+  -webkit-mask: url("tex/ui/toast_bg.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/toast_bg.png") center / 100% 100% no-repeat;
+}
+
+@keyframes messageSlide {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-message-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+/* ── Badges matching w_creators plate buttons ────────────────────────────── */
+.chat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  color: var(--badge-color, var(--wc-accent));
+  position: relative;
+  isolation: isolate;
+  background: none;
+  border: none;
+}
+
+.chat-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--badge-bg, var(--wc-plate));
+  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+}
+
+.chat-badge i {
+  font-size: 9.5px;
+}
+
+.chat-sender {
+  font-weight: 700;
+  color: var(--wc-accent);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+
+.chat-time {
+  margin-inline-start: auto;
+  font-size: 10px;
+  color: var(--wc-dim);
+  font-family: var(--font-number);
+  direction: ltr;
+}
+
+.chat-body {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #ededed;
+  word-break: break-word;
+  user-select: text;
+}
+
+/* RDR2 subtle list item divider */
+.chat-body::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin: 3px 0 4px;
+  background: var(--wc-line);
+  -webkit-mask: url("tex/ui/list_item_h_line_narrow.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/list_item_h_line_narrow.png") center / 100% 100% no-repeat;
+}
+
+/* ── Input Wrapper (RDR2 Ragged Paper Plate + 8-Cut Corners) ─────────────── */
+.chat-input-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--panel-fill);
+  box-shadow: 0 16px 45px -12px rgba(0, 0, 0, 0.95);
+  border: none;
+  pointer-events: auto;
+  animation: inputOpen 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  direction: rtl;
+  isolation: isolate;
+}
+
+/* RedM outer ambient backing behind the filled plate */
+.chat-input-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -3px -5px;
+  z-index: -1;
+  pointer-events: none;
+  background: #090909e8;
+  -webkit-mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
+}
+
+@keyframes inputOpen {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── The 8-Strip Crafting Highlight Frame (.wc-frame from w_creators) ───── */
+.wc-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  --fr-px: 12px;
+  opacity: 0.85;
+}
+
+.wc-frame > span {
+  position: absolute;
+  background: var(--wc-accent);
+}
+
+.wc-fr-t, .wc-fr-b {
+  left: var(--fr-px);
+  right: var(--fr-px);
+  height: var(--fr-px);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: auto 100%;
+  mask-size: auto 100%;
+}
+
+.wc-fr-l, .wc-fr-r {
+  top: var(--fr-px);
+  bottom: var(--fr-px);
+  width: var(--fr-px);
+  -webkit-mask-repeat: repeat-y;
+  mask-repeat: repeat-y;
+  -webkit-mask-size: 100% auto;
+  mask-size: 100% auto;
+}
+
+.wc-fr-tl, .wc-fr-tr, .wc-fr-bl, .wc-fr-br {
+  width: var(--fr-px);
+  height: var(--fr-px);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.wc-fr-t  { top: 0;    -webkit-mask-image: url("tex/ui/crafting_highlight_t.png");  mask-image: url("tex/ui/crafting_highlight_t.png"); }
+.wc-fr-b  { bottom: 0; -webkit-mask-image: url("tex/ui/crafting_highlight_b.png");  mask-image: url("tex/ui/crafting_highlight_b.png"); }
+.wc-fr-l  { left: 0;   -webkit-mask-image: url("tex/ui/crafting_highlight_l.png");  mask-image: url("tex/ui/crafting_highlight_l.png"); }
+.wc-fr-r  { right: 0;  -webkit-mask-image: url("tex/ui/crafting_highlight_r.png");  mask-image: url("tex/ui/crafting_highlight_r.png"); }
+.wc-fr-tl { top: 0;    left: 0;   -webkit-mask-image: url("tex/ui/crafting_highlight_tl.png"); mask-image: url("tex/ui/crafting_highlight_tl.png"); }
+.wc-fr-tr { top: 0;    right: 0;  -webkit-mask-image: url("tex/ui/crafting_highlight_tr.png"); mask-image: url("tex/ui/crafting_highlight_tr.png"); }
+.wc-fr-bl { bottom: 0; left: 0;   -webkit-mask-image: url("tex/ui/crafting_highlight_bl.png"); mask-image: url("tex/ui/crafting_highlight_bl.png"); }
+.wc-fr-br { bottom: 0; right: 0;  -webkit-mask-image: url("tex/ui/crafting_highlight_br.png"); mask-image: url("tex/ui/crafting_highlight_br.png"); }
+
+/* ── Input Row & Input Plate ────────────────────────────────────────────── */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  position: relative;
+  z-index: 4;
+}
+
+.channel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  color: var(--wc-accent);
+  font-size: 11px;
+  font-weight: 700;
+  flex: none;
+  position: relative;
+  isolation: isolate;
+  background: none;
+  border: none;
+}
+
+.channel-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--wc-plate);
+  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+}
+
+.channel-badge i {
+  font-size: 11px;
+}
+
+.input-plate {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  isolation: isolate;
+}
+
+.input-plate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #1f1f1f;
+  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+}
+
+.chat-input {
+  width: 100%;
+  border: 0;
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--wc-text);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  outline: none;
+  direction: rtl;
+  text-align: right;
+}
+
+.chat-input::placeholder {
+  color: #898989;
+  font-size: 12px;
+}
+
+.chat-submit-btn {
+  position: relative;
+  isolation: isolate;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 8px 11px;
+  color: var(--wc-text);
+  display: grid;
+  place-items: center;
+  flex: none;
+  transition: color 0.14s;
+}
+
+.chat-submit-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--wc-plate);
+  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  transition: background 0.14s;
+}
+
+.chat-submit-btn:hover::before {
+  background: #383838;
+}
+
+/* ── Suggestions Dropdown (OPENS DOWNWARDS BELOW INPUT) ──────────────────── */
+.suggestions-box {
+  position: absolute;
+  top: calc(100% + 8px);
+  bottom: auto;
+  left: 0;
+  right: 0;
+  max-height: 230px;
+  background: var(--panel-fill);
+  box-shadow: 0 16px 45px -12px rgba(0, 0, 0, 0.95);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  direction: rtl;
+  isolation: isolate;
+  padding: 4px 6px;
+}
+
+/* RedM outer ambient backing for suggestions */
+.suggestions-box::before {
+  content: '';
+  position: absolute;
+  inset: -3px -5px;
+  z-index: -1;
+  pointer-events: none;
+  background: #090909e8;
+  -webkit-mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
+}
+
+.suggestions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--wc-accent);
+  position: relative;
+}
+
+.suggestions-header::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 0;
+  height: 2px;
+  background: var(--wc-line-strong);
+  -webkit-mask: url("tex/ui/divider_line.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/divider_line.png") center / 100% 100% no-repeat;
+}
+
+.suggestions-title {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.suggestions-hint {
+  color: var(--wc-dim);
+  font-size: 9.5px;
+}
+
+.suggestions-hint kbd {
+  padding: 1px 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 180px;
+  padding: 4px;
+  gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(237, 237, 237, 0.3) transparent;
+}
+
+.suggestion-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.12s;
+  border-inline-start: 2px solid transparent;
+}
+
+.suggestion-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: transparent;
+  -webkit-mask: url("tex/ui/selection_box_bg_1a.png") center / 100% 100% no-repeat;
+  mask: url("tex/ui/selection_box_bg_1a.png") center / 100% 100% no-repeat;
+}
+
+.suggestion-item:hover, .suggestion-item.is-selected {
+  color: #fff;
+  border-inline-start-color: var(--wc-accent);
+}
+
+.suggestion-item:hover::before, .suggestion-item.is-selected::before {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.suggestion-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.suggestion-cmd {
+  font-weight: 700;
+  color: var(--wc-accent);
+  font-family: monospace;
+  font-size: 12px;
+  direction: ltr;
+}
+
+.suggestion-params {
+  font-size: 10.5px;
+  color: var(--wc-dim);
+}
+
+.suggestion-param-tag {
+  display: inline-block;
+  padding: 1px 4px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-inline-end: 4px;
+  font-size: 9.5px;
+}
+
+.suggestion-help {
+  font-size: 10.5px;
+  color: var(--wc-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── RedM Color Codes (^1 - ^9) ───────────────────────────────────────────── */
+.color-1 { color: #E53935 !important; }
+.color-2 { color: #43A047 !important; }
+.color-3 { color: #FDD835 !important; }
+.color-4 { color: #1E88E5 !important; }
+.color-5 { color: #00ACC1 !important; }
+.color-6 { color: #8E24AA !important; }
+.color-7 { color: #FFFFFF !important; }
+.color-8 { color: #D81B60 !important; }
+.color-9 { color: #78909C !important; }

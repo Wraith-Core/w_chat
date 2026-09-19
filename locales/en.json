@@ -1,0 +1,50 @@
+{
+  "ui": {
+    "placeholder": "Type your message... (use / for commands)",
+    "send": "Send",
+    "close_hint": "Press ESC to cancel or Enter to send",
+    "channel_general": "General"
+  },
+  "tags": {
+    "local": "LOCAL",
+    "ooc": "OOC",
+    "me": "ME",
+    "do": "DO",
+    "whisper": "WHISPER",
+    "shout": "SHOUT",
+    "try_success": "SUCCESS",
+    "try_fail": "FAIL",
+    "roll": "ROLL",
+    "police": "LAW",
+    "medic": "MEDIC",
+    "admin": "ADMIN",
+    "system": "SYSTEM",
+    "pm": "PM"
+  },
+  "commands": {
+    "help_ooc": "Send an Out Of Character message",
+    "help_me": "Describe an action performed by your character",
+    "help_do": "Describe environmental state or condition",
+    "help_whisper": "Whisper to players immediately next to you",
+    "help_shout": "Shout loudly to players within a large radius",
+    "help_try": "Perform a 50/50 chance roll",
+    "help_roll": "Roll random dice between 1 and 100",
+    "help_pm": "Send a private message to a specific player ID",
+    "help_clear": "Clear your local chat messages",
+    "help_clearchat": "Clear the chat for all players (Admin)",
+    "help_police": "Send a Law Enforcement announcement",
+    "help_medic": "Send a Medical announcement",
+    "help_announce": "Send an administrative server-wide announcement"
+  },
+  "messages": {
+    "no_permission": "You do not have permission to use this command.",
+    "invalid_id": "Invalid player ID or player is offline.",
+    "missing_text": "Please provide a message after the command.",
+    "cleared_all": "The chat has been cleared by administration.",
+    "cleared_local": "Local chat cleared successfully.",
+    "try_result": "%s tried: %s",
+    "roll_result": "%s rolled a dice and got: %s of 100",
+    "pm_to": "To [%s]: %s",
+    "pm_from": "From [%s]: %s"
+  }
+}

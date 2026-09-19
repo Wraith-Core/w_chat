@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>w_chat</title>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- تنسيقات الهوية الغربية المستوحاة من w_creators -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="chat-app" class="chat-viewport">
+    
+    <!-- حاوية الرسائل -->
+    <div id="chat-messages-wrap" class="chat-messages-wrap is-idle">
+      <div id="chat-messages" class="chat-messages">
+        <!-- يتم إدراج الرسائل هنا ديناميكياً بواسطة app.js -->
+      </div>
+    </div>
+
+    <!-- صندوق الإدخال التفاعلي -->
+    <div id="chat-input-wrapper" class="chat-input-wrapper" style="display: none;">
+      
+      <!-- إطار الزوايا الغربية المشطوفة (8-cut corners) -->
+      <div class="wc-frame" aria-hidden="true">
+        <span class="wc-fr-t"></span><span class="wc-fr-b"></span>
+        <span class="wc-fr-l"></span><span class="wc-fr-r"></span>
+        <span class="wc-fr-tl"></span><span class="wc-fr-tr"></span>
+        <span class="wc-fr-bl"></span><span class="wc-fr-br"></span>
+      </div>
+
+      <!-- حقل إدخال الرسالة -->
+      <div class="input-row">
+        <div id="channel-badge" class="channel-badge">
+          <i id="channel-icon" class="fa-solid fa-comments"></i>
+          <span id="channel-name">عام</span>
+        </div>
+        
+        <div class="input-plate">
+          <input 
+            type="text" 
+            id="chat-input" 
+            class="chat-input" 
+            placeholder="اكتب رسالتك هنا... (استخدم / لعرض الأوامر)" 
+            autocomplete="off" 
+            spellcheck="false" 
+            maxlength="250"
+          />
+        </div>
+
+        <button type="button" id="chat-submit-btn" class="chat-submit-btn" title="إرسال">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+
+      <!-- قائمة الإكمال التلقائي للاقتراحات والأوامر (تفتح للأسفل) -->
+      <div id="suggestions-box" class="suggestions-box" style="display: none;">
+        <div class="wc-frame" aria-hidden="true">
+          <span class="wc-fr-t"></span><span class="wc-fr-b"></span>
+          <span class="wc-fr-l"></span><span class="wc-fr-r"></span>
+          <span class="wc-fr-tl"></span><span class="wc-fr-tr"></span>
+          <span class="wc-fr-bl"></span><span class="wc-fr-br"></span>
+        </div>
+        <div class="suggestions-header">
+          <span class="suggestions-title"><i class="fa-solid fa-terminal"></i> الأوامر المتاحة</span>
+          <span class="suggestions-hint">اضغط <kbd>Tab</kbd> أو <kbd>Enter</kbd> للاختيار</span>
+        </div>
+        <div id="suggestions-list" class="suggestions-list">
+          <!-- يتم ملء الاقتراحات برمجياً -->
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
