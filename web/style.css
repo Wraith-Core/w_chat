@@ -615,3 +615,11 @@ html, body {
 .color-7 { color: #FFFFFF !important; }
 .color-8 { color: #D81B60 !important; }
 .color-9 { color: #78909C !important; }
+
+/* Window density follows screen height, not ultrawide width. Native world surfaces remain unscaled. */
+:root { --w-ui-scale:1; }
+@media(min-height:1300px){:root{--w-ui-scale:1.333333}}
+@media(min-height:1800px){:root{--w-ui-scale:2}}
+
+.chat-viewport { zoom:var(--w-ui-scale);bottom:calc(52vh / var(--w-ui-scale)); }
+.chat-messages-wrap { max-height:calc(38vh / var(--w-ui-scale)); }
