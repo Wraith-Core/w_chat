@@ -28,7 +28,7 @@ Config.Distances = {
 }
 
 -- ألوان وتنسيقات القنوات الأساسية
--- ★ أبيض وأسود مثل ريد ديد: كل القنوات بلون الورق (#EDE6D6) أو الورق الباهت (#B9AF9C)، وتُعرف القناة
+-- ★ أبيض وأسود مثل ريد ديد: كل القنوات بلون الورق (#F2F2F2) أو الورق الباهت (#B4B4B4)، وتُعرف القناة
 --   بكلمتها وأيقونتها لا بلونها. الأحمر الوحيد (#CB0101) علامة فقط، وتضعه الواجهة (web/style.css)
 --   شريطًا بجانب إعلان الإدارة وسطر الخطأ، ولا يُكتب به نص أبدًا.
 --   (Black and white like Red Dead: paper or dim paper only; a channel is told by its word and glyph.)
@@ -37,92 +37,92 @@ Config.Channels = {
         name = 'local',
         tag = 'محلي | Local',
         icon = 'fa-location-dot',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.08)',
-        borderColor = 'rgba(237, 230, 214, 0.3)'
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.08)',
+        borderColor = 'rgba(242, 242, 242, 0.3)'
     },
     ooc = {
         name = 'ooc',
         tag = 'OOC',
         icon = 'fa-comments',
-        color = '#EDE6D6',
-        bgColor = '#15130F',
-        borderColor = 'rgba(237, 230, 214, 0.25)'
+        color = '#F2F2F2',
+        bgColor = '#111111',
+        borderColor = 'rgba(242, 242, 242, 0.25)'
     },
     me = {
         name = 'me',
         tag = 'ME',
         icon = 'fa-user',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.12)',
-        borderColor = 'rgba(237, 230, 214, 0.35)'
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.12)',
+        borderColor = 'rgba(242, 242, 242, 0.35)'
     },
     doChannel = {
         name = 'do',
         tag = 'DO',
         icon = 'fa-eye',
-        color = '#B9AF9C',
-        bgColor = 'rgba(185, 175, 156, 0.12)',
-        borderColor = 'rgba(185, 175, 156, 0.35)'
+        color = '#B4B4B4',
+        bgColor = 'rgba(180, 180, 180, 0.12)',
+        borderColor = 'rgba(180, 180, 180, 0.35)'
     },
     whisper = {
         name = 'whisper',
         tag = 'همس',
         icon = 'fa-comment-dots',
-        color = '#B9AF9C',
-        bgColor = 'rgba(185, 175, 156, 0.12)',
-        borderColor = 'rgba(185, 175, 156, 0.35)'
+        color = '#B4B4B4',
+        bgColor = 'rgba(180, 180, 180, 0.12)',
+        borderColor = 'rgba(180, 180, 180, 0.35)'
     },
     shout = {
         name = 'shout',
         tag = 'صراخ',
         icon = 'fa-bullhorn',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.15)',
-        borderColor = 'rgba(237, 230, 214, 0.4)'
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.15)',
+        borderColor = 'rgba(242, 242, 242, 0.4)'
     },
     tryChannel = {
         name = 'try',
         tag = 'قرعة',
         icon = 'fa-dice',
         -- النجاح والفشل تقولهما الكلمة [نجاح] / [فشل]، لا اللون
-        successColor = '#EDE6D6',
-        failColor = '#B9AF9C'
+        successColor = '#F2F2F2',
+        failColor = '#B4B4B4'
     },
     police = {
         name = 'police',
         tag = 'الشرطة',
         icon = 'fa-shield-halved',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.15)',
-        borderColor = 'rgba(237, 230, 214, 0.4)',
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.15)',
+        borderColor = 'rgba(242, 242, 242, 0.4)',
         job = 'police'
     },
     medic = {
         name = 'medic',
         tag = 'الإسعاف',
         icon = 'fa-staff-snake',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.15)',
-        borderColor = 'rgba(237, 230, 214, 0.4)',
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.15)',
+        borderColor = 'rgba(242, 242, 242, 0.4)',
         job = 'ambulance'
     },
     admin = {
         name = 'admin',
         tag = 'الإدارة',
         icon = 'fa-crown',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.18)',
-        borderColor = 'rgba(237, 230, 214, 0.45)',
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.18)',
+        borderColor = 'rgba(242, 242, 242, 0.45)',
         permission = 'admin'
     },
     system = {
         name = 'system',
         tag = 'النظام',
         icon = 'fa-gear',
-        color = '#EDE6D6',
-        bgColor = '#15130F',
-        borderColor = 'rgba(237, 230, 214, 0.3)'
+        color = '#F2F2F2',
+        bgColor = '#111111',
+        borderColor = 'rgba(242, 242, 242, 0.3)'
     }
 }
 
@@ -131,30 +131,30 @@ Config.Channels = {
 Config.Ranks = {
     god = {
         label = 'مطور',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.2)',
-        borderColor = 'rgba(237, 230, 214, 0.5)',
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.2)',
+        borderColor = 'rgba(242, 242, 242, 0.5)',
         icon = 'fa-crown',
     },
     admin = {
         label = 'إدارة',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.2)',
-        borderColor = 'rgba(237, 230, 214, 0.5)',
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.2)',
+        borderColor = 'rgba(242, 242, 242, 0.5)',
         icon = 'fa-shield-halved',
     },
     mod = {
         label = 'مشرف',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.2)',
-        borderColor = 'rgba(237, 230, 214, 0.5)',
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.2)',
+        borderColor = 'rgba(242, 242, 242, 0.5)',
         icon = 'fa-user-shield',
     },
     vip = {
         label = 'VIP',
-        color = '#EDE6D6',
-        bgColor = 'rgba(237, 230, 214, 0.2)',
-        borderColor = 'rgba(237, 230, 214, 0.5)',
+        color = '#F2F2F2',
+        bgColor = 'rgba(242, 242, 242, 0.2)',
+        borderColor = 'rgba(242, 242, 242, 0.5)',
         icon = 'fa-star',
     },
 }

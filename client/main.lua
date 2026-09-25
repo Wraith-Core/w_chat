@@ -99,10 +99,10 @@ end, false)
 -- ألوان الرسائل: أبيض وأسود مثل ريد ديد
 -- ─────────────────────────────────────────────────────────────────────────────
 -- ★ Whatever colour a sender asks for ({r,g,b} in chat:addMessage, the colour of the words over a
---   head), the chat draws one of the theme's two text tones: paper (#EDE6D6) or dim paper (#B9AF9C),
+--   head), the chat draws one of the theme's two text tones: paper (#F2F2F2) or dim paper (#B4B4B4),
 --   whichever is nearer by luminance. A strong red is an error: its letters stay paper and the
 --   interface marks the line with the one red, as a ribbon (web/style.css [data-tone="error"]).
-local PAPER, PAPER_DIM = { 237, 230, 214 }, { 185, 175, 156 }
+local PAPER, PAPER_DIM = { 242, 242, 242 }, { 180, 180, 180 }
 
 ---@param color table|nil {r, g, b} or {r=, g=, b=}
 ---@return table rgb one of the two tones
@@ -113,9 +113,9 @@ local function chatTone(color)
     local g = tonumber(color[2] or color.g) or 255
     local b = tonumber(color[3] or color.b) or 255
     local isRed = r >= 150 and g <= 90 and b <= 90
-    -- the midpoint between the two tones' luminance (230 and 176)
+    -- the midpoint between the two tones' luminance (242 and 180)
     local lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    return (isRed or lum >= 203) and PAPER or PAPER_DIM, isRed
+    return (isRed or lum >= 211) and PAPER or PAPER_DIM, isRed
 end
 
 -- استقبال رسالة مهيئة من سكريبت w_chat
@@ -190,8 +190,8 @@ RegisterNetEvent('chat:addMessage', function(data)
             message = text,
             color = color,
             tone = isRed and 'error' or nil,
-            bgColor = 'rgba(237, 230, 214, 0.06)',
-            borderColor = 'rgba(237, 230, 214, 0.15)',
+            bgColor = 'rgba(242, 242, 242, 0.06)',
+            borderColor = 'rgba(242, 242, 242, 0.15)',
             icon = 'fa-bell',
             time = GetTimeAsString()
         }

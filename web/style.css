@@ -50,11 +50,11 @@ html, body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(237, 230, 214, .3);
+  background: rgba(242, 242, 242, .3);
   border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(237, 230, 214, .5);
+  background: rgba(242, 242, 242, .5);
 }
 ::-webkit-scrollbar-button {
   display: none !important;
@@ -101,7 +101,7 @@ html, body {
   overflow-x: hidden;
   padding-inline-end: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(237, 230, 214, .3) transparent;
+  scrollbar-color: rgba(242, 242, 242, .3) transparent;
 }
 
 /* one message: an ink strip of the game's brushed plate (the store's row), text in paper */
@@ -125,7 +125,7 @@ html, body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: rgba(21, 19, 15, .9);
+  background: rgba(17, 17, 17, .9);
   -webkit-mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
   mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
 }
@@ -255,7 +255,7 @@ html, body {
   flex-direction: column;
   width: 100%;
   padding: 11px 14px;
-  background: radial-gradient(130% 90% at 50% 0%, rgba(29, 26, 21, .96) 0%, rgba(21, 19, 15, .97) 42%, rgba(11, 10, 8, .98) 100%);
+  background: radial-gradient(130% 90% at 50% 0%, rgba(25, 25, 25, .96) 0%, rgba(17, 17, 17, .97) 42%, rgba(10, 10, 10, .98) 100%);
   box-shadow: 0 16px 45px -12px rgba(0, 0, 0, .9);
   border: none;
   pointer-events: auto;
@@ -269,7 +269,7 @@ html, body {
   inset: -3px -5px;
   z-index: -1;
   pointer-events: none;
-  background: rgba(11, 10, 8, .91);
+  background: rgba(10, 10, 10, .91);
   -webkit-mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
   mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
 }
@@ -434,7 +434,7 @@ html, body {
 }
 
 .chat-input::selection {
-  background: rgba(237, 230, 214, .85);
+  background: rgba(242, 242, 242, .85);
   color: var(--w-ink);
 }
 
@@ -484,7 +484,7 @@ html, body {
   left: 0;
   right: 0;
   max-height: 282px;
-  background: radial-gradient(130% 90% at 50% 0%, rgba(29, 26, 21, .96) 0%, rgba(21, 19, 15, .97) 42%, rgba(11, 10, 8, .98) 100%);
+  background: radial-gradient(130% 90% at 50% 0%, rgba(25, 25, 25, .96) 0%, rgba(17, 17, 17, .97) 42%, rgba(10, 10, 10, .98) 100%);
   box-shadow: 0 16px 45px -12px rgba(0, 0, 0, .9);
   border: none;
   display: flex;
@@ -501,7 +501,7 @@ html, body {
   inset: -3px -5px;
   z-index: -1;
   pointer-events: none;
-  background: rgba(11, 10, 8, .91);
+  background: rgba(10, 10, 10, .91);
   -webkit-mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
   mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
 }
@@ -565,8 +565,8 @@ html, body {
   min-width: 1.7em;
   height: 1.7em;
   padding: 0 .4em;
-  border: 1px solid rgba(237, 230, 214, .4);
-  box-shadow: inset 0 -2px 0 rgba(237, 230, 214, .14);
+  border: 1px solid rgba(242, 242, 242, .4);
+  box-shadow: inset 0 -2px 0 rgba(242, 242, 242, .14);
   color: var(--w-paper);
   font-family: var(--w-f-label);
   font-size: .85em;
@@ -584,7 +584,7 @@ html, body {
   padding: 4px 2px 0;
   gap: 0;
   scrollbar-width: thin;
-  scrollbar-color: rgba(237, 230, 214, .3) transparent;
+  scrollbar-color: rgba(242, 242, 242, .3) transparent;
 }
 
 /* a command row: on a hairline at rest, the paper band under the cursor or the arrow keys */
