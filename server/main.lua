@@ -78,25 +78,25 @@ local function getPlayerRank(source)
             local r = Config.Ranks.god
             return { name = 'god', label = r.label, color = r.color, bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon }
         end
-        return { name = 'god', label = 'Console', color = '#E53935', icon = 'fa-terminal' }
+        return { name = 'god', label = 'Console', color = '#EDE6D6', icon = 'fa-terminal' }
     end
     if not Config.Ranks then return nil end
 
     if IsPlayerAceAllowed(source, 'wcore.god') or IsPlayerAceAllowed(source, 'god') then
         local r = Config.Ranks.god or {}
-        return { name = 'god', label = r.label or 'مطور', color = r.color or '#E53935', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-crown' }
+        return { name = 'god', label = r.label or 'مطور', color = r.color or '#EDE6D6', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-crown' }
     end
     if IsPlayerAceAllowed(source, 'wcore.admin') or IsPlayerAceAllowed(source, 'admin') then
         local r = Config.Ranks.admin or {}
-        return { name = 'admin', label = r.label or 'إدارة', color = r.color or '#CB0101', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-shield-halved' }
+        return { name = 'admin', label = r.label or 'إدارة', color = r.color or '#EDE6D6', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-shield-halved' }
     end
     if IsPlayerAceAllowed(source, 'wcore.mod') or IsPlayerAceAllowed(source, 'mod') then
         local r = Config.Ranks.mod or {}
-        return { name = 'mod', label = r.label or 'مشرف', color = r.color or '#FB8C00', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-user-shield' }
+        return { name = 'mod', label = r.label or 'مشرف', color = r.color or '#EDE6D6', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-user-shield' }
     end
     if IsPlayerAceAllowed(source, 'wcore.vip') or IsPlayerAceAllowed(source, 'vip') then
         local r = Config.Ranks.vip or {}
-        return { name = 'vip', label = r.label or 'VIP', color = r.color or '#FDD835', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-star' }
+        return { name = 'vip', label = r.label or 'VIP', color = r.color or '#EDE6D6', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-star' }
     end
 
     if WCore then
@@ -229,9 +229,9 @@ local function handleLocalChat(source, args, raw)
         id = chatId(source),
         rank = rank,
         message = text,
-        color = Config.Channels.localChat and Config.Channels.localChat.color or '#E0E0E0',
-        bgColor = Config.Channels.localChat and Config.Channels.localChat.bgColor or 'rgba(255, 255, 255, 0.08)',
-        borderColor = Config.Channels.localChat and Config.Channels.localChat.borderColor or 'rgba(255, 255, 255, 0.3)',
+        color = Config.Channels.localChat and Config.Channels.localChat.color or '#EDE6D6',
+        bgColor = Config.Channels.localChat and Config.Channels.localChat.bgColor or 'rgba(237, 230, 214, 0.08)',
+        borderColor = Config.Channels.localChat and Config.Channels.localChat.borderColor or 'rgba(237, 230, 214, 0.3)',
         icon = Config.Channels.localChat and Config.Channels.localChat.icon or 'fa-location-dot',
         time = os.date('%H:%M')
     }
@@ -292,7 +292,7 @@ RegisterCommand('me', function(source, args, raw)
         icon = Config.Channels.me.icon,
         time = os.date('%H:%M')
     }
-    sendProximityMessage(source, Config.Distances.Me, payload, { text = '* ' .. text .. ' *', color = {229, 169, 60} })
+    sendProximityMessage(source, Config.Distances.Me, payload, { text = '* ' .. text .. ' *', color = {237, 230, 214} })
 end, false)
 
 -- 3. أمر DO
@@ -316,7 +316,7 @@ RegisterCommand('do', function(source, args, raw)
         icon = Config.Channels.doChannel.icon,
         time = os.date('%H:%M')
     }
-    sendProximityMessage(source, Config.Distances.Do, payload, { text = '** ' .. text .. ' **', color = {156, 106, 222} })
+    sendProximityMessage(source, Config.Distances.Do, payload, { text = '** ' .. text .. ' **', color = {185, 175, 156} })
 end, false)
 
 -- 4. أمر الهمس (Whisper)
@@ -385,8 +385,8 @@ RegisterCommand('try', function(source, args, raw)
     local name = getPlayerDisplayName(source)
     local resultText = isSuccess and (locale('tags.try_success') or 'نجاح') or (locale('tags.try_fail') or 'فشل')
     local resultColor = isSuccess and Config.Channels.tryChannel.successColor or Config.Channels.tryChannel.failColor
-    local bgCol = isSuccess and 'rgba(76, 175, 80, 0.15)' or 'rgba(229, 57, 53, 0.15)'
-    local bdrCol = isSuccess and 'rgba(76, 175, 80, 0.4)' or 'rgba(229, 57, 53, 0.4)'
+    local bgCol = isSuccess and 'rgba(237, 230, 214, 0.15)' or 'rgba(185, 175, 156, 0.12)'
+    local bdrCol = isSuccess and 'rgba(237, 230, 214, 0.4)' or 'rgba(185, 175, 156, 0.35)'
 
     local payload = {
         channel = 'try',
@@ -400,7 +400,7 @@ RegisterCommand('try', function(source, args, raw)
         icon = Config.Channels.tryChannel.icon,
         time = os.date('%H:%M')
     }
-    sendProximityMessage(source, Config.Distances.Me, payload, { text = ('[%s] %s'):format(resultText, text), color = isSuccess and {76, 175, 80} or {229, 57, 53} })
+    sendProximityMessage(source, Config.Distances.Me, payload, { text = ('[%s] %s'):format(resultText, text), color = isSuccess and {237, 230, 214} or {185, 175, 156} })
 end, false)
 
 -- 7. أمر رمي النرد (Roll)
@@ -418,9 +418,9 @@ RegisterCommand('roll', function(source, args, raw)
         sender = name,
         id = chatId(source),
         message = ('%s / %s'):format(score, maxRoll),
-        color = '#42A5F5',
-        bgColor = 'rgba(66, 165, 245, 0.15)',
-        borderColor = 'rgba(66, 165, 245, 0.4)',
+        color = '#EDE6D6',
+        bgColor = 'rgba(237, 230, 214, 0.15)',
+        borderColor = 'rgba(237, 230, 214, 0.4)',
         icon = 'fa-dice-d20',
         time = os.date('%H:%M')
     }
@@ -470,9 +470,9 @@ RegisterCommand('pm', function(source, args, raw)
         sender = (locale('messages.pm_to_sender') or 'إلى %s'):format(targetName),
         id = target.citizenid or chatId(targetId),
         message = text,
-        color = '#AB47BC',
-        bgColor = 'rgba(171, 71, 188, 0.15)',
-        borderColor = 'rgba(171, 71, 188, 0.4)',
+        color = '#EDE6D6',
+        bgColor = 'rgba(237, 230, 214, 0.15)',
+        borderColor = 'rgba(237, 230, 214, 0.4)',
         icon = 'fa-paper-plane',
         time = os.date('%H:%M')
     })
@@ -484,9 +484,9 @@ RegisterCommand('pm', function(source, args, raw)
         sender = (locale('messages.pm_from_sender') or 'من %s'):format(senderName),
         id = chatId(source),
         message = text,
-        color = '#AB47BC',
-        bgColor = 'rgba(171, 71, 188, 0.15)',
-        borderColor = 'rgba(171, 71, 188, 0.4)',
+        color = '#EDE6D6',
+        bgColor = 'rgba(237, 230, 214, 0.15)',
+        borderColor = 'rgba(237, 230, 214, 0.4)',
         icon = 'fa-envelope-open-text',
         time = os.date('%H:%M')
     })

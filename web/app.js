@@ -64,12 +64,60 @@
       .replace(/'/g, '&#039;');
   };
 
+  // Black and white like Red Dead: a sender's colour codes keep their place in the line but not their
+  // hue. The warm, loud codes (^1 red, ^2 green, ^3 yellow, ^8 dark red; ~r~ ~g~ ~y~ ~o~ ~e~ ...,
+  // ~COLOR_RED~ ...) become paper in a heavier weight, the cool and grey ones (^4 ^5 ^6 ^9; ~b~ ~c~
+  // ~p~ ~m~ ~u~ ~l~, ~COLOR_BLUE~ ...) dim paper. ^0 / ^7 / ^r, ~s~ ~w~ ~q~ and ~COLOR_WHITE~ go back
+  // to the line's own paper; ~n~ breaks the line; ~h~ is the heavier weight. Spans never nest.
+  const CODE_RE = /\^([0-9r])|~(COLOR_[A-Z0-9_]+|[a-zA-Z])~/g;
+  const CARET_TONE = { 1: 'tone-hi', 2: 'tone-hi', 3: 'tone-hi', 8: 'tone-hi', 4: 'tone-dim', 5: 'tone-dim', 6: 'tone-dim', 9: 'tone-dim' };
+  const TILDE_DIM = new Set(['b', 'c', 'p', 'm', 'u', 'l']);
+  const toneOf = (caret, tilde) => {
+    if (caret !== undefined) return CARET_TONE[caret] || null;
+    if (tilde === 'n') return 'br';
+    if (/^COLOR_/.test(tilde)) {
+      if (/WHITE|DEFAULT|^COLOR_PURE/.test(tilde)) return null;
+      return /BLUE|PURPLE|GREY|GRAY|BLACK|PINK|CYAN|TEAL/.test(tilde) ? 'tone-dim' : 'tone-hi';
+    }
+    const k = tilde.toLowerCase();
+    if (k === 's' || k === 'w' || k === 'q') return null;
+    return TILDE_DIM.has(k) ? 'tone-dim' : 'tone-hi';
+  };
   const formatMessageText = (raw) => {
-    let safe = escapeHtml(raw);
-    // Replace color codes
-    safe = safe.replace(/\^([1-9])/g, '<span class="color-$1">');
-    safe = safe.replace(/\^0/g, '</span>');
-    return safe;
+    const safe = escapeHtml(raw);
+    let out = '';
+    let last = 0;
+    let open = false;
+    let m;
+    CODE_RE.lastIndex = 0;
+    while ((m = CODE_RE.exec(safe))) {
+      out += safe.slice(last, m.index);
+      last = CODE_RE.lastIndex;
+      const tone = toneOf(m[1], m[2]);
+      if (tone === 'br') { out += '<br>'; continue; }
+      if (open) { out += '</span>'; open = false; }
+      if (tone) { out += `<span class="${tone}">`; open = true; }
+    }
+    out += safe.slice(last);
+    if (open) out += '</span>';
+    return out;
+  };
+
+  // a line another script sent in red (chat:addMessage with color {255, 0, 0}) is an error. The Lua
+  // side already says so with tone = 'error'; a payload forwarded raw is read here the same way.
+  const isRed = (c) => {
+    let rgb = null;
+    if (Array.isArray(c)) rgb = c;
+    else if (c && typeof c === 'object') rgb = [c.r, c.g, c.b];
+    else if (typeof c === 'string') {
+      const h = c.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i);
+      const r = c.match(/rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/i);
+      if (h) rgb = [parseInt(h[1], 16), parseInt(h[2], 16), parseInt(h[3], 16)];
+      else if (r) rgb = [r[1], r[2], r[3]];
+    }
+    if (!rgb) return false;
+    const [r, g, b] = rgb.map(Number);
+    return r >= 150 && g <= 90 && b <= 90;
   };
 
   // ── Wake & Fade Timer ────────────────────────────────────────────────────
@@ -93,8 +141,8 @@
     const card = document.createElement('div');
     card.className = 'chat-message';
     if (data.channel) card.dataset.channel = String(data.channel);
-
-    if (data.borderColor) card.style.setProperty('--msg-border', data.borderColor);
+    // the one red is a mark, never a colour of the line: an error takes the ribbon (style.css)
+    if (data.tone === 'error' || (String(data.channel || 'system') === 'system' && isRed(data.color))) card.dataset.tone = 'error';
 
     const meta = document.createElement('div');
     meta.className = 'chat-message-meta';
@@ -102,9 +150,6 @@
     // Badge
     const badge = document.createElement('span');
     badge.className = 'chat-badge';
-    if (data.bgColor) badge.style.setProperty('--badge-bg', data.bgColor);
-    if (data.color) badge.style.setProperty('--badge-color', data.color);
-    if (data.borderColor) badge.style.setProperty('--badge-border', data.borderColor);
 
     const icon = document.createElement('i');
     icon.className = `fa-solid ${data.icon || 'fa-comment'}`;
@@ -118,9 +163,6 @@
     if (data.rank && data.rank.label) {
       const rankBadge = document.createElement('span');
       rankBadge.className = 'chat-badge chat-rank-badge';
-      if (data.rank.bgColor) rankBadge.style.setProperty('--badge-bg', data.rank.bgColor);
-      if (data.rank.color) rankBadge.style.setProperty('--badge-color', data.rank.color);
-      if (data.rank.borderColor) rankBadge.style.setProperty('--badge-border', data.rank.borderColor);
 
       const rIcon = document.createElement('i');
       rIcon.className = `fa-solid ${data.rank.icon || 'fa-shield-halved'}`;

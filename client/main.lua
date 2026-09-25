@@ -95,6 +95,29 @@ end, false)
 -- أحداث استقبال الرسائل والاقتراحات
 -- ─────────────────────────────────────────────────────────────────────────────
 
+-- ─────────────────────────────────────────────────────────────────────────────
+-- ألوان الرسائل: أبيض وأسود مثل ريد ديد
+-- ─────────────────────────────────────────────────────────────────────────────
+-- ★ Whatever colour a sender asks for ({r,g,b} in chat:addMessage, the colour of the words over a
+--   head), the chat draws one of the theme's two text tones: paper (#EDE6D6) or dim paper (#B9AF9C),
+--   whichever is nearer by luminance. A strong red is an error: its letters stay paper and the
+--   interface marks the line with the one red, as a ribbon (web/style.css [data-tone="error"]).
+local PAPER, PAPER_DIM = { 237, 230, 214 }, { 185, 175, 156 }
+
+---@param color table|nil {r, g, b} or {r=, g=, b=}
+---@return table rgb one of the two tones
+---@return boolean isRed the sender meant an error
+local function chatTone(color)
+    if type(color) ~= 'table' then return PAPER, false end
+    local r = tonumber(color[1] or color.r) or 255
+    local g = tonumber(color[2] or color.g) or 255
+    local b = tonumber(color[3] or color.b) or 255
+    local isRed = r >= 150 and g <= 90 and b <= 90
+    -- the midpoint between the two tones' luminance (230 and 176)
+    local lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return (isRed or lum >= 203) and PAPER or PAPER_DIM, isRed
+end
+
 -- استقبال رسالة مهيئة من سكريبت w_chat
 RegisterNetEvent('w_chat:client:addMessage', function(data)
     if not data then return end
@@ -155,10 +178,8 @@ RegisterNetEvent('chat:addMessage', function(data)
 
     if text == '' then return end
 
-    local color = '#EDEDED'
-    if data.color and type(data.color) == 'table' then
-        color = string.format('rgb(%d, %d, %d)', data.color[1] or 255, data.color[2] or 255, data.color[3] or 255)
-    end
+    local tone, isRed = chatTone(data.color)
+    local color = ('rgb(%d, %d, %d)'):format(tone[1], tone[2], tone[3])
 
     SendNUIMessage({
         action = 'ADD_MESSAGE',
@@ -168,8 +189,9 @@ RegisterNetEvent('chat:addMessage', function(data)
             sender = sender,
             message = text,
             color = color,
-            bgColor = 'rgba(255, 255, 255, 0.06)',
-            borderColor = 'rgba(255, 255, 255, 0.15)',
+            tone = isRed and 'error' or nil,
+            bgColor = 'rgba(237, 230, 214, 0.06)',
+            borderColor = 'rgba(237, 230, 214, 0.15)',
             icon = 'fa-bell',
             time = GetTimeAsString()
         }
@@ -216,7 +238,7 @@ if Config.Enable3DText then
         activeTexts3D[id] = {
             ped = targetPed,
             text = text,
-            color = color or {255, 255, 255},
+            color = chatTone(color),
             time = GetGameTimer() + (Config.Display3DDuration or 7000)
         }
     end)
@@ -226,7 +248,8 @@ if Config.Enable3DText then
         if not onScreen then return end
 
         SetTextScale(0.35, 0.35)
-        SetTextColor(color[1] or 255, color[2] or 255, color[3] or 255, 220)
+        local r, g, b = color[1], color[2], color[3]
+        SetTextColor(r, g, b, 220)
         SetTextCentre(1)
 
         -- استخدام نمط الخط المناسب لـ RedM

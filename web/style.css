@@ -130,8 +130,10 @@ html, body {
   mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
 }
 
-/* an announcement from the staff: the one red, a torn ribbon at the line's start */
-.chat-message[data-channel="admin"]::after {
+/* an announcement from the staff, and a line another script sent as an error (red in its
+   chat:addMessage colour): the one red, a torn ribbon at the line's start. The letters stay paper. */
+.chat-message[data-channel="admin"]::after,
+.chat-message[data-tone="error"]::after {
   content: '';
   position: absolute;
   inset-inline-start: 3px;
@@ -695,16 +697,11 @@ body .suggestions-title.wst-title {
   text-shadow: none !important;
 }
 
-/* ── the chat colour codes (^1 - ^9): the sender's own words, kept, in warm tones ── */
-.color-1 { color: #D9534A !important; }
-.color-2 { color: #8FB07A !important; }
-.color-3 { color: #E3C27A !important; }
-.color-4 { color: #7FA3C4 !important; }
-.color-5 { color: #7FB8B4 !important; }
-.color-6 { color: #A88BB8 !important; }
-.color-7 { color: var(--w-paper) !important; }
-.color-8 { color: #C9728A !important; }
-.color-9 { color: var(--w-paper-dim) !important; }
+/* ── the chat colour codes (^1 - ^9, ~r~ ~b~ ..., ~COLOR_*~): black and white like Red Dead. The
+   words a sender marked keep their mark, not their hue (app.js formatMessageText): a loud code is
+   paper in a heavier weight, a cool or grey one is dim paper. Never red letters. ── */
+.chat-body .tone-hi { color: var(--w-paper) !important; font-weight: 700; }
+.chat-body .tone-dim { color: var(--w-paper-dim) !important; }
 
 /* Window density follows screen height, not ultrawide width. Native world surfaces remain unscaled. */
 :root { --w-ui-scale:1; }
