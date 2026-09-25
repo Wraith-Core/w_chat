@@ -24,6 +24,12 @@
   const channelBadge = document.getElementById('channel-badge');
   const channelIcon = document.getElementById('channel-icon');
   const channelName = document.getElementById('channel-name');
+  // the badge's word takes its own direction, so an Arabic channel name in an English chat is
+  // never tracked or upper-cased (the theme's label role reads --w-label-track per dir)
+  const setChannelName = (text) => {
+    channelName.textContent = text;
+    channelName.dir = /[؀-ۿ]/.test(text) ? 'rtl' : 'ltr';
+  };
   const suggestionsBox = document.getElementById('suggestions-box');
   const suggestionsList = document.getElementById('suggestions-list');
 
@@ -86,6 +92,7 @@
   const addMessage = (data) => {
     const card = document.createElement('div');
     card.className = 'chat-message';
+    if (data.channel) card.dataset.channel = String(data.channel);
 
     if (data.borderColor) card.style.setProperty('--msg-border', data.borderColor);
 
@@ -128,9 +135,6 @@
     if (data.sender) {
       const sender = document.createElement('span');
       sender.className = 'chat-sender';
-      if (data.rank && data.rank.color) {
-        sender.style.color = data.rank.color;
-      }
       sender.textContent = data.sender + (data.id ? ` [${data.id}]` : '');
       meta.appendChild(sender);
     }
@@ -187,84 +191,29 @@
   };
 
   // ── Channel Badge Detection on Typing ────────────────────────────────────
+  // the channel the line will go to: its glyph and its name. The badge's colours are the
+  // theme's (style.css); a channel is told by its word and glyph, not by a hue.
+  const CHANNELS = [
+    [['/local', '/l'], 'fa-location-dot', 'محلي | Local'],
+    [['/me'], 'fa-user', 'فعل | ME'],
+    [['/do'], 'fa-eye', 'بيئة | DO'],
+    [['/w', '/whisper'], 'fa-comment-dots', 'همس'],
+    [['/s', '/shout'], 'fa-bullhorn', 'صراخ'],
+    [['/try'], 'fa-dice', 'قرعة'],
+    [['/roll'], 'fa-dice-d20', 'نرد'],
+    [['/pm'], 'fa-paper-plane', 'خاص'],
+    [['/police'], 'fa-shield-halved', 'الشرطة'],
+    [['/medic'], 'fa-staff-snake', 'الإسعاف'],
+    [['/ann', '/announce'], 'fa-crown', 'الإدارة'],
+  ];
+
   const updateChannelIndicator = (val) => {
     const trimmed = val.trimStart();
     const words = trimmed.split(' ');
     const cmd = words[0].toLowerCase();
-
-    if (cmd === '/local' || cmd === '/l') {
-      channelBadge.style.color = '#E0E0E0';
-      channelBadge.style.background = 'rgba(255, 255, 255, 0.12)';
-      channelBadge.style.borderColor = 'rgba(255, 255, 255, 0.35)';
-      channelIcon.className = 'fa-solid fa-location-dot';
-      channelName.textContent = 'محلي | Local';
-    } else if (cmd === '/me') {
-      channelBadge.style.color = '#E5A93C';
-      channelBadge.style.background = 'rgba(229, 169, 60, 0.15)';
-      channelBadge.style.borderColor = 'rgba(229, 169, 60, 0.4)';
-      channelIcon.className = 'fa-solid fa-user';
-      channelName.textContent = 'فعل | ME';
-    } else if (cmd === '/do') {
-      channelBadge.style.color = '#9C6ADE';
-      channelBadge.style.background = 'rgba(156, 106, 222, 0.15)';
-      channelBadge.style.borderColor = 'rgba(156, 106, 222, 0.4)';
-      channelIcon.className = 'fa-solid fa-eye';
-      channelName.textContent = 'بيئة | DO';
-    } else if (cmd === '/w' || cmd === '/whisper') {
-      channelBadge.style.color = '#64B5F6';
-      channelBadge.style.background = 'rgba(100, 181, 246, 0.15)';
-      channelBadge.style.borderColor = 'rgba(100, 181, 246, 0.4)';
-      channelIcon.className = 'fa-solid fa-comment-dots';
-      channelName.textContent = 'همس';
-    } else if (cmd === '/s' || cmd === '/shout') {
-      channelBadge.style.color = '#FF7043';
-      channelBadge.style.background = 'rgba(255, 112, 67, 0.15)';
-      channelBadge.style.borderColor = 'rgba(255, 112, 67, 0.4)';
-      channelIcon.className = 'fa-solid fa-bullhorn';
-      channelName.textContent = 'صراخ';
-    } else if (cmd === '/try') {
-      channelBadge.style.color = '#81C784';
-      channelBadge.style.background = 'rgba(129, 199, 132, 0.15)';
-      channelBadge.style.borderColor = 'rgba(129, 199, 132, 0.4)';
-      channelIcon.className = 'fa-solid fa-dice';
-      channelName.textContent = 'قرعة';
-    } else if (cmd === '/roll') {
-      channelBadge.style.color = '#42A5F5';
-      channelBadge.style.background = 'rgba(66, 165, 245, 0.15)';
-      channelBadge.style.borderColor = 'rgba(66, 165, 245, 0.4)';
-      channelIcon.className = 'fa-solid fa-dice-d20';
-      channelName.textContent = 'نرد';
-    } else if (cmd === '/pm') {
-      channelBadge.style.color = '#AB47BC';
-      channelBadge.style.background = 'rgba(171, 71, 188, 0.15)';
-      channelBadge.style.borderColor = 'rgba(171, 71, 188, 0.4)';
-      channelIcon.className = 'fa-solid fa-paper-plane';
-      channelName.textContent = 'خاص';
-    } else if (cmd === '/police') {
-      channelBadge.style.color = '#3884ff';
-      channelBadge.style.background = 'rgba(56, 132, 255, 0.15)';
-      channelBadge.style.borderColor = 'rgba(56, 132, 255, 0.4)';
-      channelIcon.className = 'fa-solid fa-shield-halved';
-      channelName.textContent = 'الشرطة';
-    } else if (cmd === '/medic') {
-      channelBadge.style.color = '#26A69A';
-      channelBadge.style.background = 'rgba(38, 166, 154, 0.15)';
-      channelBadge.style.borderColor = 'rgba(38, 166, 154, 0.4)';
-      channelIcon.className = 'fa-solid fa-staff-snake';
-      channelName.textContent = 'الإسعاف';
-    } else if (cmd === '/ann' || cmd === '/announce') {
-      channelBadge.style.color = '#E53935';
-      channelBadge.style.background = 'rgba(229, 57, 53, 0.18)';
-      channelBadge.style.borderColor = 'rgba(229, 57, 53, 0.45)';
-      channelIcon.className = 'fa-solid fa-crown';
-      channelName.textContent = 'الإدارة';
-    } else {
-      channelBadge.style.color = 'var(--wc-accent)';
-      channelBadge.style.background = 'var(--wc-plate)';
-      channelBadge.style.borderColor = 'var(--wc-line-strong)';
-      channelIcon.className = 'fa-solid fa-comments';
-      channelName.textContent = defaultChannelName;
-    }
+    const hit = CHANNELS.find(([cmds]) => cmds.includes(cmd));
+    channelIcon.className = 'fa-solid ' + (hit ? hit[1] : 'fa-comments');
+    setChannelName(hit ? hit[2] : defaultChannelName);
   };
 
   // ── Suggestions Autocomplete ─────────────────────────────────────────────
@@ -452,7 +401,7 @@
           if (msg.data.placeholder) inputEl.placeholder = msg.data.placeholder;
           if (msg.data.channelGeneral) {
             defaultChannelName = msg.data.channelGeneral;
-            channelName.textContent = defaultChannelName;
+            setChannelName(defaultChannelName);
           }
           if (msg.data.fadeTimeout) fadeTimeout = msg.data.fadeTimeout;
         }

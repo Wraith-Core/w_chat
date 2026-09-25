@@ -33,6 +33,18 @@ local function getPlayerDisplayName(source)
     return GetPlayerName(source) or ('Player %s'):format(source)
 end
 
+-- The id printed beside a sender's name is the one a reader types into /pm, so it is his citizen
+-- id (fixed per character), never the server id: since citizen ids are plain digits, "/pm 5" to
+-- someone shown as [5] by server id reached citizen 5, a different person. A player with no
+-- character in play yet shows '#<server id>', which /pm reads as a server id.
+local function chatId(source)
+    -- the console has no id to show (the interface hides a missing one, as it hid the old 0)
+    if not source or source <= 0 then return nil end
+    local ok, cid = pcall(function() return w.citizen.idOf(source) end)
+    if ok and cid then return cid end
+    return ('#%s'):format(source)
+end
+
 -- فحص الصلاحيات الإدارية
 local function isPlayerAdmin(source)
     if source == 0 then return true end
@@ -165,9 +177,10 @@ RegisterNetEvent('w_chat:server:sendMessage', function(rawText)
         text = text:sub(1, Config.MaxMessageLength)
     end
 
-    -- إذا كانت تبدأ بـ /، فهذا أمر (قد تم إرساله مسبقاً من خلال ExecuteCommand بالكلاينت، ولكن كحماية إضافية)
+    -- A command never reaches this event: the client runs it itself (client/main.lua chatResult).
+    -- ! Executing it here ran it as the CONSOLE (ExecuteCommand on the server has no player), so a
+    --    forged event could run any restricted command, e.g. '/additem 12 ...' against a citizen.
     if text:sub(1, 1) == '/' then
-        ExecuteCommand(text:sub(2))
         return
     end
 
@@ -178,7 +191,7 @@ RegisterNetEvent('w_chat:server:sendMessage', function(rawText)
         channel = 'ooc',
         tag = locale('tags.ooc') or 'OOC',
         sender = name,
-        id = src,
+        id = chatId(src),
         rank = rank,
         message = text,
         color = Config.Channels.ooc.color,
@@ -213,7 +226,7 @@ local function handleLocalChat(source, args, raw)
         channel = 'local',
         tag = locale('tags.local') or 'محلي',
         sender = name,
-        id = source,
+        id = chatId(source),
         rank = rank,
         message = text,
         color = Config.Channels.localChat and Config.Channels.localChat.color or '#E0E0E0',
@@ -242,7 +255,7 @@ RegisterCommand('ooc', function(source, args, raw)
         channel = 'ooc',
         tag = locale('tags.ooc') or 'OOC',
         sender = name,
-        id = source,
+        id = chatId(source),
         rank = rank,
         message = text,
         color = Config.Channels.ooc.color,
@@ -271,7 +284,7 @@ RegisterCommand('me', function(source, args, raw)
         channel = 'me',
         tag = locale('tags.me') or 'ME',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = Config.Channels.me.color,
         bgColor = Config.Channels.me.bgColor,
@@ -295,7 +308,7 @@ RegisterCommand('do', function(source, args, raw)
         channel = 'do',
         tag = locale('tags.do') or 'DO',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = Config.Channels.doChannel.color,
         bgColor = Config.Channels.doChannel.bgColor,
@@ -319,7 +332,7 @@ local function handleWhisper(source, args)
         channel = 'whisper',
         tag = locale('tags.whisper') or 'همس',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = Config.Channels.whisper.color,
         bgColor = Config.Channels.whisper.bgColor,
@@ -346,7 +359,7 @@ local function handleShout(source, args)
         channel = 'shout',
         tag = locale('tags.shout') or 'صراخ',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = Config.Channels.shout.color,
         bgColor = Config.Channels.shout.bgColor,
@@ -379,7 +392,7 @@ RegisterCommand('try', function(source, args, raw)
         channel = 'try',
         tag = (locale('tags.roll') or 'قرعة') .. ' [' .. resultText .. ']',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = resultColor,
         bgColor = bgCol,
@@ -403,7 +416,7 @@ RegisterCommand('roll', function(source, args, raw)
         channel = 'roll',
         tag = locale('tags.roll') or 'نرد',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = ('%s / %s'):format(score, maxRoll),
         color = '#42A5F5',
         bgColor = 'rgba(66, 165, 245, 0.15)',
@@ -417,11 +430,27 @@ end, false)
 -- 8. أمر الرسائل الخاصة (PM)
 RegisterCommand('pm', function(source, args, raw)
     if source == 0 then return end
-    local targetId = tonumber(args[1])
-    if not targetId or not GetPlayerName(targetId) then
-        TriggerClientEvent('w_chat:client:addSystemMessage', source, locale('messages.invalid_id') or 'معرف اللاعب غير صحيح.')
+    if not args[1] then
+        TriggerClientEvent('w_chat:client:addSystemMessage', source, w.citizen.reasonText('invalid_id', source))
         return
     end
+
+    -- The recipient is named by his citizen id ('#5' = a server id); a private message is live, so
+    -- he has to be in the game. An offline citizen is named in the answer so the sender knows who.
+    local target, reason, offline = w.citizen.requireOnline(args[1], { self = source })
+    if not target and reason == 'not_found' then
+        -- '#5' reaches any connected player, even one with no character in play yet: the chat shows
+        -- such a sender as '#5' (chatId), so a reply typed from what is on screen has to land
+        local kind, serverId = w.citizen.parse(args[1])
+        if kind == 'server' and GetPlayerName(serverId) then target = { source = serverId } end
+    end
+    if not target then
+        local text = w.citizen.reasonText(reason, source)
+        if offline then text = ('%s: %s'):format(w.citizen.label(offline), text) end
+        TriggerClientEvent('w_chat:client:addSystemMessage', source, text)
+        return
+    end
+    local targetId = target.source
 
     table.remove(args, 1)
     local text = table.concat(args, ' ')
@@ -434,11 +463,12 @@ RegisterCommand('pm', function(source, args, raw)
     local targetName = getPlayerDisplayName(targetId)
 
     -- إشعار الراسل
+    -- (the id beside the name is drawn by the interface from `id`: the citizen id to reply to)
     TriggerClientEvent('w_chat:client:addMessage', source, {
         channel = 'pm',
         tag = locale('tags.pm') or 'خاص',
-        sender = ('إلى [%s] %s'):format(targetId, targetName),
-        id = targetId,
+        sender = (locale('messages.pm_to_sender') or 'إلى %s'):format(targetName),
+        id = target.citizenid or chatId(targetId),
         message = text,
         color = '#AB47BC',
         bgColor = 'rgba(171, 71, 188, 0.15)',
@@ -451,8 +481,8 @@ RegisterCommand('pm', function(source, args, raw)
     TriggerClientEvent('w_chat:client:addMessage', targetId, {
         channel = 'pm',
         tag = locale('tags.pm') or 'خاص',
-        sender = ('من [%s] %s'):format(source, senderName),
-        id = source,
+        sender = (locale('messages.pm_from_sender') or 'من %s'):format(senderName),
+        id = chatId(source),
         message = text,
         color = '#AB47BC',
         bgColor = 'rgba(171, 71, 188, 0.15)',
@@ -486,7 +516,7 @@ RegisterCommand('police', function(source, args, raw)
         channel = 'police',
         tag = locale('tags.police') or 'الشرطة',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = Config.Channels.police.color,
         bgColor = Config.Channels.police.bgColor,
@@ -510,7 +540,7 @@ RegisterCommand('medic', function(source, args, raw)
         channel = 'medic',
         tag = locale('tags.medic') or 'الإسعاف',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = Config.Channels.medic.color,
         bgColor = Config.Channels.medic.bgColor,
@@ -534,7 +564,7 @@ local function handleAnnounce(source, args)
         channel = 'admin',
         tag = locale('tags.admin') or 'الإدارة',
         sender = name,
-        id = source,
+        id = chatId(source),
         message = text,
         color = Config.Channels.admin.color,
         bgColor = Config.Channels.admin.bgColor,
@@ -558,7 +588,7 @@ local defaultSuggestions = {
     { name = '/s', help = 'صراخ يسمعه من في المنطقة الواسعة', params = { { name = 'الرسالة', help = 'نص الصراخ' } } },
     { name = '/try', help = 'إجراء محاولة بنسبة نجاح 50%', params = { { name = 'المحاولة', help = 'ما تحاول فعله' } } },
     { name = '/roll', help = 'رمي نرد عشوائي بين 1 و 100', params = { { name = 'الحد الأقصى (اختياري)', help = 'الرقم الأقصى' } } },
-    { name = '/pm', help = 'إرسال رسالة خاصة للاعب محدد', params = { { name = 'المعرف', help = 'ID اللاعب' }, { name = 'الرسالة', help = 'نص الرسالة' } } },
+    { name = '/pm', help = 'إرسال رسالة خاصة للاعب محدد', params = { { name = 'رقم المواطن', help = 'رقم المواطن الثابت (لرقم السيرفر اكتب # قبله)' }, { name = 'الرسالة', help = 'نص الرسالة' } } },
     { name = '/clear', help = 'مسح سجل الشات المحلي من الشاشة' },
     { name = '/clearchat', help = 'مسح الشات العام لجميع اللاعبين (إدارة)' },
     { name = '/police', help = 'إعلان رسمي لقوات الشرطة والمارشال', params = { { name = 'الإعلان', help = 'نص الإعلان' } } },

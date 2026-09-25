@@ -29,7 +29,7 @@
     "help_shout": "Shout loudly to players within a large radius",
     "help_try": "Perform a 50/50 chance roll",
     "help_roll": "Roll random dice between 1 and 100",
-    "help_pm": "Send a private message to a specific player ID",
+    "help_pm": "Private message to a player by citizen ID (# in front for a server ID)",
     "help_clear": "Clear your local chat messages",
     "help_clearchat": "Clear the chat for all players (Admin)",
     "help_police": "Send a Law Enforcement announcement",
@@ -38,13 +38,15 @@
   },
   "messages": {
     "no_permission": "You do not have permission to use this command.",
-    "invalid_id": "Invalid player ID or player is offline.",
+    "invalid_id": "Invalid citizen ID or the player is offline.",
     "missing_text": "Please provide a message after the command.",
     "cleared_all": "The chat has been cleared by administration.",
     "cleared_local": "Local chat cleared successfully.",
     "try_result": "%s tried: %s",
     "roll_result": "%s rolled a dice and got: %s of 100",
     "pm_to": "To [%s]: %s",
-    "pm_from": "From [%s]: %s"
+    "pm_from": "From [%s]: %s",
+    "pm_to_sender": "To %s",
+    "pm_from_sender": "From %s"
   }
 }

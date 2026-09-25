@@ -1,71 +1,27 @@
 /* ============================================================================
-   w_chat — Wraith Core & w_creators Authentic RedM Theme
-   Authentic RDR2 texture masks, monochrome palette, and left-center placement.
+   w_chat · the Wraith theme (w_lib/nui/theme): warm ink, aged paper, one red.
+
+   The tokens (--w-*) and the faces come from w_lib's theme package, pulled in by the
+   store-theme.css link in index.html (it @imports theme/tokens.css + theme/fonts.css);
+   base.css adds the w-* primitives (the key caps). Nothing is declared twice here.
+
+   Type roles (THEME.md):
+     channel tag, sender, command hints .... label  (Hapna Slab caps / Tajawal 700)
+     the message itself .................... text   (EB Garamond / Amiri 400, never under 16px)
+     what the player types ................. input  (Hapna Slab / Tajawal 500)
+     the time .............................. figure (EB Garamond lining, left to right)
+   Arabic is never letter-spaced, uppercased or faux-bold. Every Arabic run has a set
+   line-height (Amiri's box is 1.76em, its tails reach .52em under the line).
+
+   Colour: paper on ink. A channel is told by its tag and its glyph, not by a hue; a staff
+   rank is the paper band; the one red is the mark on an announcement from the staff.
    ============================================================================ */
 
-/* ── Fonts ────────────────────────────────────────────────────────────────── */
-@font-face {
-  font-family: "RDR Lino";
-  src: url("fonts/RDRLino-Regular.woff2") format("woff2");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Hapna Slab";
-  src: url("fonts/HapnaSlabSerif-DemiBold.woff2") format("woff2");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "RDR Catalogue";
-  src: url("fonts/RDRCatalogueBold-Bold.woff2") format("woff2");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Noto Sans Arabic";
-  src: url("fonts/NotoSansArabic.woff2") format("woff2");
-  font-weight: 100 900;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Tajawal";
-  font-weight: 400;
-  src: url("fonts/tajawal-arabic-400-normal.woff2") format("woff2"),
-       url("fonts/tajawal-latin-400-normal.woff2") format("woff2");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Tajawal";
-  font-weight: 500;
-  src: url("fonts/tajawal-arabic-500-normal.woff2") format("woff2");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Tajawal";
-  font-weight: 700;
-  src: url("fonts/tajawal-arabic-700-normal.woff2") format("woff2"),
-       url("fonts/tajawal-latin-700-normal.woff2") format("woff2");
-  font-display: swap;
-}
-
-/* ── Palette Tokens matching w_creators exactly ───────────────────────────── */
 :root {
-  --wc-panel: #0b0b0b;
-  --wc-plate: #1f1f1f;
-  --wc-text: #fff;
-  --wc-dim: #a9a9a9;
-  --wc-accent: #ededed;
-  --wc-line: #ffffff24;
-  --wc-line-strong: #ffffff4d;
-  --wc-red: #cb0101;
-  --font-body: 'Hapna Slab', 'Tajawal', 'Noto Sans Arabic', Georgia, serif;
-  --font-display: 'RDR Lino', 'Tajawal', 'Noto Sans Arabic', Georgia, serif;
-  --font-number: 'RDR Catalogue', 'Tajawal', Georgia, serif;
-  --panel-fill: radial-gradient(130% 90% at 50% 0%, #1c1c1c 0%, #111111 42%, #080808 100%);
+  --chat-tag: calc(11px * var(--w-k-label, 1));
+  --chat-meta: calc(12.5px * var(--w-k-label, 1));
+  --chat-body: calc(16px * var(--w-k-text, 1));
+  --chat-input: calc(15px * var(--w-k-input, 1));
 }
 
 * {
@@ -80,26 +36,25 @@ html, body {
   height: 100vh;
   overflow: hidden;
   background: transparent !important;
-  color: var(--wc-text);
-  font-family: var(--font-body);
+  color: var(--w-paper);
+  font-family: var(--w-f-label);
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Custom Sleek Scrollbar without ugly arrows ───────────────────────────── */
+/* ── the scrollbar: a square paper thumb, no track, no arrows ─────────────── */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 0;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 3px;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(237, 237, 237, 0.3);
-  border-radius: 3px;
+  background: rgba(237, 230, 214, .3);
+  border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(237, 237, 237, 0.6);
+  background: rgba(237, 230, 214, .5);
 }
 ::-webkit-scrollbar-button {
   display: none !important;
@@ -107,7 +62,7 @@ html, body {
   height: 0;
 }
 
-/* ── Positioning: Far left, raised slightly above middle ─────────────────── */
+/* ── Positioning: far left, raised slightly above the middle ─────────────── */
 .chat-viewport {
   position: absolute;
   left: 28px;
@@ -119,7 +74,7 @@ html, body {
   z-index: 999;
 }
 
-/* ── Messages Container ──────────────────────────────────────────────────── */
+/* ── Messages ─────────────────────────────────────────────────────────────── */
 .chat-messages-wrap {
   position: relative;
   width: 100%;
@@ -129,7 +84,7 @@ html, body {
   justify-content: flex-end;
   margin-bottom: 8px;
   opacity: 1;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.4s var(--w-ease);
   pointer-events: auto;
 }
 
@@ -141,74 +96,83 @@ html, body {
 .chat-messages {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   overflow-y: auto;
   overflow-x: hidden;
   padding-inline-end: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(237, 237, 237, 0.3) transparent;
+  scrollbar-color: rgba(237, 230, 214, .3) transparent;
 }
 
-/* ── Individual Message Card (RDR2 torn paper plate) ──────────────────────── */
+/* one message: an ink strip of the game's brushed plate (the store's row), text in paper */
 .chat-message {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 8px 16px 10px;
+  gap: 2px;
+  padding: 8px 16px 9px;
   background: none;
   border: none;
-  animation: messageSlide 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: messageSlide 0.18s var(--w-ease) forwards;
   pointer-events: auto;
-  direction: rtl;
-  text-align: right;
+  text-align: start;
   isolation: isolate;
 }
 
-/* RDR2 Ragged / Torn ink outline for messages */
 .chat-message::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(130% 90% at 50% 0%, rgba(24, 24, 24, 0.94) 0%, rgba(12, 12, 12, 0.97) 100%);
-  -webkit-mask: url("tex/ui/toast_bg.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/toast_bg.png") center / 100% 100% no-repeat;
+  background: rgba(21, 19, 15, .9);
+  -webkit-mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+  mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+}
+
+/* an announcement from the staff: the one red, a torn ribbon at the line's start */
+.chat-message[data-channel="admin"]::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 3px;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  background: var(--w-red);
+  pointer-events: none;
 }
 
 @keyframes messageSlide {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .chat-message-meta {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  min-width: 0;
 }
 
-/* ── Badges matching w_creators plate buttons ────────────────────────────── */
+/* the channel tag: the label role on an ink plate. The channel's configured hue is not used:
+   the tag's word and its glyph say which channel it is. */
 .chat-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  flex: none;
   padding: 3px 8px;
-  font-weight: 700;
-  font-size: 10px;
-  letter-spacing: 0.03em;
-  color: var(--badge-color, var(--wc-accent));
   position: relative;
   isolation: isolate;
   background: none;
   border: none;
+  color: var(--w-paper-dim);
+  font-family: var(--w-f-label);
+  font-weight: var(--w-wt-label);
+  font-size: var(--chat-tag);
+  line-height: 1.3;
+  text-transform: var(--w-label-case);
+  letter-spacing: calc(var(--w-label-track) * .6);
 }
 
 .chat-badge::before {
@@ -216,102 +180,116 @@ html, body {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--badge-bg, var(--wc-plate));
-  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  background: var(--w-ink-3);
+  -webkit-mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+  mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+}
+
+/* a staff or VIP rank: the paper band, ink text */
+.chat-badge.chat-rank-badge {
+  color: var(--w-ink);
+}
+.chat-badge.chat-rank-badge::before {
+  background: var(--w-paper);
 }
 
 .chat-badge i {
-  font-size: 9.5px;
+  font-size: .9em;
 }
 
 .chat-sender {
-  font-weight: 700;
-  color: var(--wc-accent);
-  font-size: 11.5px;
-  letter-spacing: 0.02em;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-block: .1em;
+  color: var(--w-paper);
+  font-family: var(--w-f-label);
+  font-weight: var(--w-wt-label);
+  font-size: var(--chat-meta);
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
 .chat-time {
+  flex: none;
   margin-inline-start: auto;
-  font-size: 10px;
-  color: var(--wc-dim);
-  font-family: var(--font-number);
+  color: var(--w-paper-faint);
+  font-family: var(--w-f-figure);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 12.5px;
+  line-height: 1.3;
   direction: ltr;
+  unicode-bidi: isolate;
 }
 
+/* the message: the reading-text role */
 .chat-body {
-  font-size: 13px;
-  line-height: 1.4;
-  color: #ededed;
+  color: var(--w-paper);
+  font-family: var(--w-f-text);
+  font-weight: 400;
+  font-size: var(--chat-body);
+  line-height: var(--w-lh-text);
+  letter-spacing: 0;
   word-break: break-word;
   user-select: text;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .55);
 }
 
-/* RDR2 subtle list item divider */
+/* a hairline between the meta row and the message */
 .chat-body::before {
   content: '';
   display: block;
   width: 100%;
-  height: 2px;
-  margin: 3px 0 4px;
-  background: var(--wc-line);
-  -webkit-mask: url("tex/ui/list_item_h_line_narrow.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/list_item_h_line_narrow.png") center / 100% 100% no-repeat;
+  height: 1px;
+  margin: 3px 0 3px;
+  background: var(--w-rule);
 }
 
-/* ── Input Wrapper (RDR2 Ragged Paper Plate + 8-Cut Corners) ─────────────── */
+/* ── the input: a sheet with the brushed edge and the paper frame ─────────── */
 .chat-input-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 10px 14px;
-  background: var(--panel-fill);
-  box-shadow: 0 16px 45px -12px rgba(0, 0, 0, 0.95);
+  padding: 11px 14px;
+  background: radial-gradient(130% 90% at 50% 0%, rgba(29, 26, 21, .96) 0%, rgba(21, 19, 15, .97) 42%, rgba(11, 10, 8, .98) 100%);
+  box-shadow: 0 16px 45px -12px rgba(0, 0, 0, .9);
   border: none;
   pointer-events: auto;
-  animation: inputOpen 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  direction: rtl;
+  animation: inputOpen 0.16s var(--w-ease) forwards;
   isolation: isolate;
 }
 
-/* RedM outer ambient backing behind the filled plate */
 .chat-input-wrapper::before {
   content: '';
   position: absolute;
   inset: -3px -5px;
   z-index: -1;
   pointer-events: none;
-  background: #090909e8;
-  -webkit-mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
+  background: rgba(11, 10, 8, .91);
+  -webkit-mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
+  mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
 }
 
 @keyframes inputOpen {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── The 8-Strip Crafting Highlight Frame (.wc-frame from w_creators) ───── */
+/* the eight-piece frame (crafting_highlight), in paper */
 .wc-frame {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 3;
   --fr-px: 12px;
-  opacity: 0.85;
+  opacity: .5;
 }
 
 .wc-frame > span {
   position: absolute;
-  background: var(--wc-accent);
+  background: var(--w-paper);
 }
 
 .wc-fr-t, .wc-fr-b {
@@ -341,16 +319,16 @@ html, body {
   mask-size: 100% 100%;
 }
 
-.wc-fr-t  { top: 0;    -webkit-mask-image: url("tex/ui/crafting_highlight_t.png");  mask-image: url("tex/ui/crafting_highlight_t.png"); }
-.wc-fr-b  { bottom: 0; -webkit-mask-image: url("tex/ui/crafting_highlight_b.png");  mask-image: url("tex/ui/crafting_highlight_b.png"); }
-.wc-fr-l  { left: 0;   -webkit-mask-image: url("tex/ui/crafting_highlight_l.png");  mask-image: url("tex/ui/crafting_highlight_l.png"); }
-.wc-fr-r  { right: 0;  -webkit-mask-image: url("tex/ui/crafting_highlight_r.png");  mask-image: url("tex/ui/crafting_highlight_r.png"); }
-.wc-fr-tl { top: 0;    left: 0;   -webkit-mask-image: url("tex/ui/crafting_highlight_tl.png"); mask-image: url("tex/ui/crafting_highlight_tl.png"); }
-.wc-fr-tr { top: 0;    right: 0;  -webkit-mask-image: url("tex/ui/crafting_highlight_tr.png"); mask-image: url("tex/ui/crafting_highlight_tr.png"); }
-.wc-fr-bl { bottom: 0; left: 0;   -webkit-mask-image: url("tex/ui/crafting_highlight_bl.png"); mask-image: url("tex/ui/crafting_highlight_bl.png"); }
-.wc-fr-br { bottom: 0; right: 0;  -webkit-mask-image: url("tex/ui/crafting_highlight_br.png"); mask-image: url("tex/ui/crafting_highlight_br.png"); }
+.wc-fr-t  { top: 0;    -webkit-mask-image: var(--w-tex-frame-t);  mask-image: var(--w-tex-frame-t); }
+.wc-fr-b  { bottom: 0; -webkit-mask-image: var(--w-tex-frame-b);  mask-image: var(--w-tex-frame-b); }
+.wc-fr-l  { left: 0;   -webkit-mask-image: var(--w-tex-frame-l);  mask-image: var(--w-tex-frame-l); }
+.wc-fr-r  { right: 0;  -webkit-mask-image: var(--w-tex-frame-r);  mask-image: var(--w-tex-frame-r); }
+.wc-fr-tl { top: 0;    left: 0;   -webkit-mask-image: var(--w-tex-frame-tl); mask-image: var(--w-tex-frame-tl); }
+.wc-fr-tr { top: 0;    right: 0;  -webkit-mask-image: var(--w-tex-frame-tr); mask-image: var(--w-tex-frame-tr); }
+.wc-fr-bl { bottom: 0; left: 0;   -webkit-mask-image: var(--w-tex-frame-bl); mask-image: var(--w-tex-frame-bl); }
+.wc-fr-br { bottom: 0; right: 0;  -webkit-mask-image: var(--w-tex-frame-br); mask-image: var(--w-tex-frame-br); }
 
-/* ── Input Row & Input Plate ────────────────────────────────────────────── */
+/* ── the input row ────────────────────────────────────────────────────────── */
 .input-row {
   display: flex;
   align-items: center;
@@ -360,19 +338,25 @@ html, body {
   z-index: 4;
 }
 
+/* the channel the line will go to: the label role on a plate, the glyph beside it */
 .channel-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 10px;
-  color: var(--wc-accent);
-  font-size: 11px;
-  font-weight: 700;
+  gap: 6px;
   flex: none;
+  min-height: 34px;
+  padding: 0 11px;
   position: relative;
   isolation: isolate;
   background: none;
   border: none;
+  color: var(--w-paper);
+  font-family: var(--w-f-label);
+  font-weight: var(--w-wt-label);
+  font-size: var(--chat-meta);
+  line-height: 1.3;
+  text-transform: var(--w-label-case);
+  letter-spacing: calc(var(--w-label-track) * .5);
 }
 
 .channel-badge::before {
@@ -380,13 +364,23 @@ html, body {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--wc-plate);
-  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  background: var(--w-ink-3);
+  -webkit-mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+  mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
 }
 
 .channel-badge i {
-  font-size: 11px;
+  font-size: .9em;
+  color: var(--w-paper-dim);
+}
+
+/* the channel word reads the label role from its OWN dir (app.js sets it from the text), so an
+   Arabic channel name inside an English chat is never letter-spaced or upper-cased */
+#channel-name {
+  font-family: var(--w-f-label);
+  font-weight: var(--w-wt-label);
+  text-transform: var(--w-label-case);
+  letter-spacing: calc(var(--w-label-track) * .5);
 }
 
 .input-plate {
@@ -404,41 +398,59 @@ html, body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: #1f1f1f;
-  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
+  background: var(--w-ink-2);
+  -webkit-mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+  mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+}
+
+.input-plate:focus-within {
+  box-shadow: inset 0 -2px 0 var(--w-paper);
 }
 
 .chat-input {
   width: 100%;
+  min-height: 34px;
   border: 0;
-  padding: 8px 10px;
+  padding: 6px 10px;
   background: transparent;
-  color: var(--wc-text);
-  font-family: var(--font-body);
-  font-size: 13.5px;
+  color: var(--w-paper);
+  caret-color: var(--w-paper);
+  font-family: var(--w-f-input);
+  font-weight: var(--w-wt-input);
+  font-size: var(--chat-input);
+  line-height: 1.3;
+  letter-spacing: 0;
   outline: none;
-  direction: rtl;
-  text-align: right;
+  text-align: start;
+  user-select: text;
 }
 
 .chat-input::placeholder {
-  color: #898989;
-  font-size: 12px;
+  color: var(--w-paper-faint);
+  opacity: 1;
+  font-size: .9em;
 }
 
+.chat-input::selection {
+  background: rgba(237, 230, 214, .85);
+  color: var(--w-ink);
+}
+
+/* send: the primary action, the paper band */
 .chat-submit-btn {
   position: relative;
   isolation: isolate;
   cursor: pointer;
   background: none;
   border: 0;
-  padding: 8px 11px;
-  color: var(--wc-text);
+  min-width: 38px;
+  min-height: 34px;
+  padding: 0 11px;
+  color: var(--w-ink);
   display: grid;
   place-items: center;
   flex: none;
-  transition: color 0.14s;
+  transition: color var(--w-t-fast) var(--w-ease);
 }
 
 .chat-submit-btn::before {
@@ -447,55 +459,57 @@ html, body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: var(--wc-plate);
-  -webkit-mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/selection_box_bg_1c.png") center / 100% 100% no-repeat;
-  transition: background 0.14s;
+  background: var(--w-paper);
+  -webkit-mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+  mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
+  transition: background-color var(--w-t-fast) var(--w-ease);
 }
 
-.chat-submit-btn:hover::before {
-  background: #383838;
+.chat-submit-btn:hover::before,
+.chat-submit-btn:focus-visible::before {
+  background: var(--w-paper-lit);
 }
 
-/* ── Suggestions Dropdown (OPENS DOWNWARDS BELOW INPUT) ──────────────────── */
+.chat-submit-btn:active::before {
+  background: var(--w-paper-dim);
+}
+
+/* ── the commands list (opens downwards, under the input) ────────────────── */
 .suggestions-box {
   position: absolute;
   top: calc(100% + 8px);
   bottom: auto;
   left: 0;
   right: 0;
-  max-height: 230px;
-  background: var(--panel-fill);
-  box-shadow: 0 16px 45px -12px rgba(0, 0, 0, 0.95);
+  max-height: 282px;
+  background: radial-gradient(130% 90% at 50% 0%, rgba(29, 26, 21, .96) 0%, rgba(21, 19, 15, .97) 42%, rgba(11, 10, 8, .98) 100%);
+  box-shadow: 0 16px 45px -12px rgba(0, 0, 0, .9);
   border: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   z-index: 1000;
-  direction: rtl;
   isolation: isolate;
-  padding: 4px 6px;
+  padding: 6px 8px 8px;
 }
 
-/* RedM outer ambient backing for suggestions */
 .suggestions-box::before {
   content: '';
   position: absolute;
   inset: -3px -5px;
   z-index: -1;
   pointer-events: none;
-  background: #090909e8;
-  -webkit-mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/help_text_bg.png") center / 100% 100% no-repeat;
+  background: rgba(11, 10, 8, .91);
+  -webkit-mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
+  mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
 }
 
 .suggestions-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
-  font-size: 11px;
-  color: var(--wc-accent);
+  gap: 10px;
+  padding: 6px 10px 8px;
   position: relative;
 }
 
@@ -505,116 +519,192 @@ html, body {
   left: 6px;
   right: 6px;
   bottom: 0;
-  height: 2px;
-  background: var(--wc-line-strong);
-  -webkit-mask: url("tex/ui/divider_line.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/divider_line.png") center / 100% 100% no-repeat;
+  height: 3px;
+  background: var(--w-rule-3);
+  -webkit-mask: var(--w-tex-divider) center / 100% 100% no-repeat;
+  mask: var(--w-tex-divider) center / 100% 100% no-repeat;
 }
 
+/* the list's title: a kicker in the label role */
 .suggestions-title {
-  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 6px;
+  color: var(--w-paper);
+  font-family: var(--w-f-label);
+  font-weight: var(--w-wt-label);
+  font-size: var(--chat-tag);
+  line-height: 1.3;
+  text-transform: var(--w-label-case);
+  letter-spacing: var(--w-label-track);
+}
+
+.suggestions-title i {
+  color: var(--w-paper-dim);
 }
 
 .suggestions-hint {
-  color: var(--wc-dim);
-  font-size: 9.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--w-paper-dim);
+  font-family: var(--w-f-label);
+  font-weight: 400;
+  font-size: var(--chat-tag);
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
+/* the key caps (.w-key in theme/base.css), a notch smaller in this dense line */
 .suggestions-hint kbd {
-  padding: 1px 4px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7em;
+  height: 1.7em;
+  padding: 0 .4em;
+  border: 1px solid rgba(237, 230, 214, .4);
+  box-shadow: inset 0 -2px 0 rgba(237, 230, 214, .14);
+  color: var(--w-paper);
+  font-family: var(--w-f-label);
+  font-size: .85em;
+  line-height: 1;
+  letter-spacing: .04em;
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .suggestions-list {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  max-height: 180px;
-  padding: 4px;
-  gap: 2px;
+  max-height: 222px;
+  padding: 4px 2px 0;
+  gap: 0;
   scrollbar-width: thin;
-  scrollbar-color: rgba(237, 237, 237, 0.3) transparent;
+  scrollbar-color: rgba(237, 230, 214, .3) transparent;
 }
 
+/* a command row: on a hairline at rest, the paper band under the cursor or the arrow keys */
 .suggestion-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 5px 10px;
+  gap: 1px;
+  padding: 6px 12px 7px;
   cursor: pointer;
   position: relative;
-  transition: color 0.12s;
-  border-inline-start: 2px solid transparent;
+  isolation: isolate;
+  color: var(--w-paper);
+  border-bottom: 1px solid var(--w-rule);
+  transition: color var(--w-t-fast) var(--w-ease);
+}
+
+.suggestion-item:last-child {
+  border-bottom-color: transparent;
 }
 
 .suggestion-item::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -1px -3px 0;
   z-index: -1;
-  background: transparent;
-  -webkit-mask: url("tex/ui/selection_box_bg_1a.png") center / 100% 100% no-repeat;
-  mask: url("tex/ui/selection_box_bg_1a.png") center / 100% 100% no-repeat;
+  background: var(--w-paper);
+  opacity: 0;
+  -webkit-mask: var(--w-tex-band) center / 100% 100% no-repeat;
+  mask: var(--w-tex-band) center / 100% 100% no-repeat;
+  transition: opacity var(--w-t-fast) var(--w-ease);
 }
 
 .suggestion-item:hover, .suggestion-item.is-selected {
-  color: #fff;
-  border-inline-start-color: var(--wc-accent);
+  color: var(--w-ink);
+  border-bottom-color: transparent;
 }
 
 .suggestion-item:hover::before, .suggestion-item.is-selected::before {
-  background: rgba(255, 255, 255, 0.08);
+  opacity: 1;
 }
 
 .suggestion-top {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: baseline;
+  gap: 8px;
+  direction: ltr;
+  justify-content: flex-end;
+}
+
+[dir="ltr"] .suggestion-top {
+  justify-content: flex-start;
 }
 
 .suggestion-cmd {
+  color: inherit;
+  font-family: var(--w-f-mono);
   font-weight: 700;
-  color: var(--wc-accent);
-  font-family: monospace;
-  font-size: 12px;
+  font-size: 13.5px;
+  line-height: 1.3;
   direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .suggestion-params {
-  font-size: 10.5px;
-  color: var(--wc-dim);
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: inherit;
+  opacity: .72;
 }
 
 .suggestion-param-tag {
   display: inline-block;
-  padding: 1px 4px;
-  background: rgba(255, 255, 255, 0.08);
-  margin-inline-end: 4px;
-  font-size: 9.5px;
+  font-family: var(--w-f-label);
+  font-weight: 400;
+  font-size: var(--chat-tag);
+  line-height: 1.3;
+  letter-spacing: 0;
+  unicode-bidi: isolate;
 }
 
 .suggestion-help {
-  font-size: 10.5px;
-  color: var(--wc-dim);
+  color: inherit;
+  opacity: .75;
+  font-family: var(--w-f-label);
+  font-weight: 400;
+  font-size: var(--chat-meta);
+  line-height: 1.35;
+  letter-spacing: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ── RedM Color Codes (^1 - ^9) ───────────────────────────────────────────── */
-.color-1 { color: #E53935 !important; }
-.color-2 { color: #43A047 !important; }
-.color-3 { color: #FDD835 !important; }
-.color-4 { color: #1E88E5 !important; }
-.color-5 { color: #00ACC1 !important; }
-.color-6 { color: #8E24AA !important; }
-.color-7 { color: #FFFFFF !important; }
-.color-8 { color: #D81B60 !important; }
-.color-9 { color: #78909C !important; }
+/* ── under w_lib's store layer ────────────────────────────────────────────────
+   store-theme-bridge.js (the `chat` profile) adds wst-* classes to these nodes and
+   store-theme.css paints them with !important. Most of it is this same look; these few
+   rules keep the list on hairlines (the store boxes every card) and size the list's
+   title for the title role it takes there (Lalezar / EB Garamond). */
+body .suggestion-item.wst-card::before { background: transparent !important; }
+body .suggestion-item.wst-card { border-bottom: 1px solid var(--w-rule) !important; }
+body .suggestion-item.wst-card:last-child,
+body .suggestion-item.wst-card.is-selected,
+body .suggestion-item.wst-card:hover { border-bottom-color: transparent !important; }
+body .suggestions-title.wst-title {
+  font-size: calc(17px * var(--w-k-title));
+  line-height: var(--w-lh-title);
+  text-transform: none;
+  letter-spacing: 0;
+  text-shadow: none !important;
+}
+
+/* ── the chat colour codes (^1 - ^9): the sender's own words, kept, in warm tones ── */
+.color-1 { color: #D9534A !important; }
+.color-2 { color: #8FB07A !important; }
+.color-3 { color: #E3C27A !important; }
+.color-4 { color: #7FA3C4 !important; }
+.color-5 { color: #7FB8B4 !important; }
+.color-6 { color: #A88BB8 !important; }
+.color-7 { color: var(--w-paper) !important; }
+.color-8 { color: #C9728A !important; }
+.color-9 { color: var(--w-paper-dim) !important; }
 
 /* Window density follows screen height, not ultrawide width. Native world surfaces remain unscaled. */
 :root { --w-ui-scale:1; }

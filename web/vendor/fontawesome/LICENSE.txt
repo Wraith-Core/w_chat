@@ -1,0 +1,5 @@
+Font Awesome Free 6.5.1 (solid set: css/fontawesome.min.css, css/solid.min.css, webfonts/fa-solid-900.woff2)
+Copyright 2023 Fonticons, Inc.
+
+Shipped unmodified with w_chat so the chat's channel glyphs load without any request outside the game.
+Licences: Icons CC BY 4.0, Fonts SIL OFL 1.1, Code MIT (Font Awesome Free licence).

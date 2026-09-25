@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>w_chat</title>
   
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Font Awesome Free 6.5.1, solid set only, shipped with the resource (no request leaves the game) -->
+  <link rel="stylesheet" href="vendor/fontawesome/css/fontawesome.min.css" />
+  <link rel="stylesheet" href="vendor/fontawesome/css/solid.min.css" />
   
-  <!-- تنسيقات الهوية الغربية المستوحاة من w_creators -->
+  <!-- the Wraith theme: style.css reads its tokens; store-theme.css @imports theme/tokens.css + fonts.css; base.css adds the w-* primitives -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cfx-nui-w_lib/nui/assets/store-theme.css">
   <link rel="stylesheet" href="https://cfx-nui-w_lib/nui/assets/store-adapters.css">
+  <link rel="stylesheet" href="https://cfx-nui-w_lib/nui/theme/base.css">
   <script defer src="https://cfx-nui-w_lib/nui/assets/store-theme-bridge.js"></script>
 </head>
 <body data-store-theme="chat" style="background: transparent !important; background-color: transparent !important;">
@@ -39,7 +41,7 @@
       <div class="input-row">
         <div id="channel-badge" class="channel-badge">
           <i id="channel-icon" class="fa-solid fa-comments"></i>
-          <span id="channel-name">عام</span>
+          <span id="channel-name" dir="rtl">عام</span>
         </div>
         
         <div class="input-plate">
@@ -69,7 +71,7 @@
         </div>
         <div class="suggestions-header">
           <span class="suggestions-title"><i class="fa-solid fa-terminal"></i> الأوامر المتاحة</span>
-          <span class="suggestions-hint">اضغط <kbd>Tab</kbd> أو <kbd>Enter</kbd> للاختيار</span>
+          <span class="suggestions-hint">اضغط <kbd class="w-key">Tab</kbd> أو <kbd class="w-key">Enter</kbd> للاختيار</span>
         </div>
         <div id="suggestions-list" class="suggestions-list">
           <!-- يتم ملء الاقتراحات برمجياً -->
