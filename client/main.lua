@@ -62,7 +62,7 @@ RegisterCommand('openChat', function()
     end
 end, false)
 
-RegisterKeyMapping('openChat', 'فتح الشات (Wraith Chat)', 'keyboard', Config.DefaultKey or 'T')
+RegisterKeyMapping('openChat', 'فتح الشات (Red River Chat)', 'keyboard', Config.DefaultKey or 'T')
 
 -- استقبال رد الشات من واجهة NUI
 RegisterNUICallback('chatResult', function(data, cb)

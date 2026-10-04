@@ -5,7 +5,7 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 name 'w_chat'
 author 'Wraith Studio'
 version '1.0.0'
-description 'w_chat — The custom, roleplay-ready chat system built for Wraith Core and styled after w_lib'
+description 'w_chat — The custom, roleplay-ready chat system built for Red River and styled after w_lib'
 
 lua54 'yes'
 
