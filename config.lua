@@ -105,7 +105,7 @@ Config.Channels = {
         color = '#F2F2F2',
         bgColor = 'rgba(242, 242, 242, 0.15)',
         borderColor = 'rgba(242, 242, 242, 0.4)',
-        job = 'ambulance'
+        job = 'doctor' -- w_medic's job (was 'ambulance', w_ambulancejob)
     },
     admin = {
         name = 'admin',
