@@ -40,6 +40,7 @@
     "no_permission": "You do not have permission to use this command.",
     "invalid_id": "Invalid citizen ID or the player is offline.",
     "missing_text": "Please provide a message after the command.",
+    "slow_down": "Slow down, wait a moment before you send again.",
     "cleared_all": "The chat has been cleared by administration.",
     "cleared_local": "Local chat cleared successfully.",
     "try_result": "%s tried: %s",

@@ -163,10 +163,48 @@ RegisterNetEvent('chat:addMessage', function(data)
     end
 end)
 
+-- Audit (2026-10-18): one flood limit for everything a player sends to the chat (the NUI message and every chat
+-- command below): Config.FloodMax messages per Config.FloodWindowMs; above it the message is dropped and the sender
+-- told once per window. Before, one player could send to everyone as fast as he liked.
+local floodLog = {}
+local function flooding(src)
+    src = tonumber(src)
+    if not src or src <= 0 then return false end
+    local now, window = GetGameTimer(), Config.FloodWindowMs or 10000
+    local f = floodLog[src]
+    if not f or now - f.at > window then
+        f = { at = now, n = 0 }
+        floodLog[src] = f
+    end
+    f.n = f.n + 1
+    if f.n <= (Config.FloodMax or 6) then return false end
+    if not f.told then
+        f.told = true
+        TriggerClientEvent('w_chat:client:addSystemMessage', src, locale('messages.slow_down') or 'على مهلك، انتظر قليلًا ثم أرسل.')
+    end
+    return true
+end
+
+AddEventHandler('playerDropped', function()
+    floodLog[source] = nil
+end)
+
+--- RegisterCommand with the flood limit in front (every chat command of this file goes through it)
+local function chatCommand(name, handler, restricted)
+    RegisterCommand(name, function(source, args, raw)
+        if flooding(source) then return end
+        -- a command line longer than a chat message (+ room for the command and a target) is dropped
+        if tonumber(source) and tonumber(source) > 0 and type(raw) == 'string'
+            and #raw > (Config.MaxMessageLength or 250) + 40 then return end
+        return handler(source, args, raw)
+    end, restricted)
+end
+
 -- معالجة إرسال الرسائل من واجهة NUI
 RegisterNetEvent('w_chat:server:sendMessage', function(rawText)
     local src = source
     if not rawText or type(rawText) ~= 'string' then return end
+    if flooding(src) then return end
 
     -- إزالة الفراغات الزائدة
     local text = rawText:gsub('^%s*(.-)%s*$', '%1')
@@ -238,11 +276,11 @@ local function handleLocalChat(source, args, raw)
     sendProximityMessage(source, Config.Distances.Local or 20.0, payload)
 end
 
-RegisterCommand('local', handleLocalChat, false)
-RegisterCommand('l', handleLocalChat, false)
+chatCommand('local', handleLocalChat, false)
+chatCommand('l', handleLocalChat, false)
 
 -- 1. أمر OOC
-RegisterCommand('ooc', function(source, args, raw)
+chatCommand('ooc', function(source, args, raw)
     if source == 0 then return end
     local text = table.concat(args, ' ')
     if text == '' then
@@ -272,7 +310,7 @@ RegisterCommand('ooc', function(source, args, raw)
 end, false)
 
 -- 2. أمر ME
-RegisterCommand('me', function(source, args, raw)
+chatCommand('me', function(source, args, raw)
     if source == 0 then return end
     local text = table.concat(args, ' ')
     if text == '' then
@@ -296,7 +334,7 @@ RegisterCommand('me', function(source, args, raw)
 end, false)
 
 -- 3. أمر DO
-RegisterCommand('do', function(source, args, raw)
+chatCommand('do', function(source, args, raw)
     if source == 0 then return end
     local text = table.concat(args, ' ')
     if text == '' then
@@ -343,8 +381,8 @@ local function handleWhisper(source, args)
     sendProximityMessage(source, Config.Distances.Whisper, payload)
 end
 
-RegisterCommand('w', handleWhisper, false)
-RegisterCommand('whisper', handleWhisper, false)
+chatCommand('w', handleWhisper, false)
+chatCommand('whisper', handleWhisper, false)
 
 -- 5. أمر الصراخ (Shout)
 local function handleShout(source, args)
@@ -370,11 +408,11 @@ local function handleShout(source, args)
     sendProximityMessage(source, Config.Distances.Shout, payload)
 end
 
-RegisterCommand('s', handleShout, false)
-RegisterCommand('shout', handleShout, false)
+chatCommand('s', handleShout, false)
+chatCommand('shout', handleShout, false)
 
 -- 6. أمر القرعة (Try)
-RegisterCommand('try', function(source, args, raw)
+chatCommand('try', function(source, args, raw)
     if source == 0 then return end
     local text = table.concat(args, ' ')
     if text == '' then
@@ -404,7 +442,7 @@ RegisterCommand('try', function(source, args, raw)
 end, false)
 
 -- 7. أمر رمي النرد (Roll)
-RegisterCommand('roll', function(source, args, raw)
+chatCommand('roll', function(source, args, raw)
     if source == 0 then return end
     local maxRoll = tonumber(args[1]) or 100
     if maxRoll < 2 then maxRoll = 100 end
@@ -428,7 +466,7 @@ RegisterCommand('roll', function(source, args, raw)
 end, false)
 
 -- 8. أمر الرسائل الخاصة (PM)
-RegisterCommand('pm', function(source, args, raw)
+chatCommand('pm', function(source, args, raw)
     if source == 0 then return end
     if not args[1] then
         TriggerClientEvent('w_chat:client:addSystemMessage', source, w.citizen.reasonText('invalid_id', source))
@@ -493,7 +531,7 @@ RegisterCommand('pm', function(source, args, raw)
 end, false)
 
 -- 9. أمر مسح الشات العام (Clearchat)
-RegisterCommand('clearchat', function(source, args, raw)
+chatCommand('clearchat', function(source, args, raw)
     if not isPlayerAdmin(source) then
         TriggerClientEvent('w_chat:client:addSystemMessage', source, locale('messages.no_permission') or 'ليس لديك صلاحية.')
         return
@@ -503,7 +541,7 @@ RegisterCommand('clearchat', function(source, args, raw)
 end, false)
 
 -- 10. أمر إعلان الشرطة (Police)
-RegisterCommand('police', function(source, args, raw)
+chatCommand('police', function(source, args, raw)
     if source ~= 0 and not hasPlayerJob(source, Config.Channels.police.job) and not isPlayerAdmin(source) then
         TriggerClientEvent('w_chat:client:addSystemMessage', source, locale('messages.no_permission') or 'ليس لديك صلاحية.')
         return
@@ -527,7 +565,7 @@ RegisterCommand('police', function(source, args, raw)
 end, false)
 
 -- 11. أمر إعلان الإسعاف (Medic)
-RegisterCommand('medic', function(source, args, raw)
+chatCommand('medic', function(source, args, raw)
     if source ~= 0 and not hasPlayerJob(source, Config.Channels.medic.job) and not isPlayerAdmin(source) then
         TriggerClientEvent('w_chat:client:addSystemMessage', source, locale('messages.no_permission') or 'ليس لديك صلاحية.')
         return
@@ -584,8 +622,8 @@ local function handleAnnounce(source, args)
     })
 end
 
-RegisterCommand('ann', handleAnnounce, false)
-RegisterCommand('announce', handleAnnounce, false)
+chatCommand('ann', handleAnnounce, false)
+chatCommand('announce', handleAnnounce, false)
 
 -- إرسال قائمة الاقتراحات المبدئية عند انضمام اللاعب
 local defaultSuggestions = {

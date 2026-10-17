@@ -8,6 +8,8 @@ Config.FadeTimeout = 8500
 
 -- الحد الأقصى لطول الرسالة
 Config.MaxMessageLength = 250
+Config.FloodMax = 6           -- messages a player may send (chat + chat commands) per window; more are dropped
+Config.FloodWindowMs = 10000  -- the flood window (audit 2026-10-18)
 
 -- زر فتح الشات الافتراضي (RedM Key Mapping)
 Config.DefaultKey = 'T'
