@@ -560,6 +560,16 @@ local function handleAnnounce(source, args)
     if text == '' then return end
     local name = source == 0 and 'Console' or getPlayerDisplayName(source)
 
+    -- The announcement on everyone's screen as well: w_hud's white text under the compass. An
+    -- optional first word sets how long it stays (/ann 5m <text>, /ann 30s <text>; 10 s otherwise).
+    if GetResourceState('w_hud') == 'started' then
+        pcall(function()
+            local seconds, rest = exports.w_hud:SplitDuration(text)
+            if seconds then text = rest end
+            exports.w_hud:Announce(text, seconds, { by = name })
+        end)
+    end
+
     sendGlobalMessage({
         channel = 'admin',
         tag = locale('tags.admin') or 'الإدارة',
