@@ -15,6 +15,7 @@
 
    Colour: paper on ink. A channel is told by its tag and its glyph, not by a hue; a staff
    rank is the paper band; the one red is the mark on an announcement from the staff.
+   1.1.2: the store's VIP tiers (bronze .. diamond) are the only bands with a hue (owner 2026-10-21).
    ============================================================================ */
 
 :root {
@@ -193,6 +194,14 @@ html, body {
 }
 .chat-badge.chat-rank-badge::before {
   background: var(--w-paper);
+}
+
+/* 1.1.2: a VIP tier from the store (w_vip): the same band in the tier's own colours (config.lua) */
+.chat-badge.chat-rank-badge[data-tier] {
+  color: var(--rank-ink, var(--w-ink));
+}
+.chat-badge.chat-rank-badge[data-tier]::before {
+  background: var(--rank-band, var(--w-paper));
 }
 
 .chat-badge i {

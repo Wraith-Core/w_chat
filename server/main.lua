@@ -94,6 +94,18 @@ local function getPlayerRank(source)
         local r = Config.Ranks.mod or {}
         return { name = 'mod', label = r.label or 'مشرف', color = r.color or '#F2F2F2', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-user-shield' }
     end
+    -- 1.1.2: a VIP tier from the store (w_vip) wears its own colours; the staff above keep precedence and
+    -- the plain VIP badge below stays for a 'wcore.vip' given by hand
+    local tier = 0
+    if GetResourceState('w_vip') == 'started' then
+        local ok, t = pcall(function() return exports.w_vip:Tier(source) end)
+        tier = ok and tonumber(t) or 0
+    end
+    local tierKey = tier > 0 and Config.VipTiers and Config.VipTiers[tier]
+    if tierKey and Config.Ranks[tierKey] then
+        local r = Config.Ranks[tierKey]
+        return { name = tierKey, label = r.label, color = r.color, bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon, tier = tier }
+    end
     if IsPlayerAceAllowed(source, 'wcore.vip') or IsPlayerAceAllowed(source, 'vip') then
         local r = Config.Ranks.vip or {}
         return { name = 'vip', label = r.label or 'VIP', color = r.color or '#F2F2F2', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-star' }

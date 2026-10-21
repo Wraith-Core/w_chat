@@ -130,6 +130,7 @@ Config.Channels = {
 
 -- ألوان وتنسيقات رتب اللاعبين
 -- ★ الرتبة شريط ورق بحبر داكن في الواجهة؛ تُعرف بكلمتها وأيقونتها (التاج، الدرع، النجمة)، لا بلون.
+--   1.1.2: only the store's VIP tiers have a hue (owner 2026-10-21).
 Config.Ranks = {
     god = {
         label = 'مطور',
@@ -159,4 +160,44 @@ Config.Ranks = {
         borderColor = 'rgba(242, 242, 242, 0.5)',
         icon = 'fa-star',
     },
+    -- 1.1.2: the store's VIP tiers (w_vip): each tier's own band (bgColor) and ink (color), '#rrggbb' only.
+    -- The staff ranks always come first; the plain `vip` above stays for a 'wcore.vip' given by hand.
+    vip_bronze = {
+        label = 'VIP برونزي',
+        color = '#1A0F06',
+        bgColor = '#B4773F',
+        borderColor = '#7A4E26',
+        icon = 'fa-star',
+    },
+    vip_silver = {
+        label = 'VIP فضي',
+        color = '#15181B',
+        bgColor = '#C3C8CE',
+        borderColor = '#8C939B',
+        icon = 'fa-star',
+    },
+    vip_gold = {
+        label = 'VIP ذهبي',
+        color = '#1E1604',
+        bgColor = '#D9B44A',
+        borderColor = '#9C7F26',
+        icon = 'fa-star',
+    },
+    vip_platinum = {
+        label = 'VIP بلاتيني',
+        color = '#101A22',
+        bgColor = '#A9BCCB',
+        borderColor = '#6F8496',
+        icon = 'fa-gem',
+    },
+    vip_diamond = {
+        label = 'VIP ماسي',
+        color = '#05222C',
+        bgColor = '#8FDDF2',
+        borderColor = '#4FA9C2',
+        icon = 'fa-gem',
+    },
 }
+
+-- 1.1.2: exports.w_vip:Tier (1..5) -> its key in Config.Ranks
+Config.VipTiers = { 'vip_bronze', 'vip_silver', 'vip_gold', 'vip_platinum', 'vip_diamond' }
