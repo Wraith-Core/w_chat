@@ -72,6 +72,14 @@ local function hasPlayerJob(source, jobName)
 end
 
 -- فحص واستخراج رتبة اللاعب للتلوين والشارات
+--- 1.1.3 (2026-10-21): the name colour bought in the server store (w_vip perk chat_color), or nil.
+local function nameColorOf(source)
+    if GetResourceState('w_vip') ~= 'started' then return nil end
+    local ok, n = pcall(function() return exports.w_vip:Perk(source, 'chat_color', 0) end)
+    if ok and (tonumber(n) or 0) > 0 then return Config.StoreNameColor end
+    return nil
+end
+
 local function getPlayerRank(source)
     if source == 0 then
         if Config.Ranks and Config.Ranks.god then
@@ -243,6 +251,7 @@ RegisterNetEvent('w_chat:server:sendMessage', function(rawText)
         sender = name,
         id = chatId(src),
         rank = rank,
+        nameColor = nameColorOf(src),   -- 1.1.3: a coloured name bought in the server store
         message = text,
         color = Config.Channels.ooc.color,
         bgColor = Config.Channels.ooc.bgColor,
@@ -278,6 +287,7 @@ local function handleLocalChat(source, args, raw)
         sender = name,
         id = chatId(source),
         rank = rank,
+        nameColor = nameColorOf(source),   -- 1.1.3: a coloured name bought in the server store
         message = text,
         color = Config.Channels.localChat and Config.Channels.localChat.color or '#F2F2F2',
         bgColor = Config.Channels.localChat and Config.Channels.localChat.bgColor or 'rgba(242, 242, 242, 0.08)',
@@ -307,6 +317,7 @@ chatCommand('ooc', function(source, args, raw)
         sender = name,
         id = chatId(source),
         rank = rank,
+        nameColor = nameColorOf(source),   -- 1.1.3: a coloured name bought in the server store
         message = text,
         color = Config.Channels.ooc.color,
         bgColor = Config.Channels.ooc.bgColor,

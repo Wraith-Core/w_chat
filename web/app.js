@@ -187,6 +187,11 @@
       const sender = document.createElement('span');
       sender.className = 'chat-sender';
       sender.textContent = data.sender + (data.id ? ` [${data.id}]` : '');
+      // 1.1.3: a name colour bought in the server store
+      if (isColour(data.nameColor)) {
+        sender.style.color = data.nameColor;
+        sender.classList.add('chat-sender-store');
+      }
       meta.appendChild(sender);
     }
 

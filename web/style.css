@@ -719,3 +719,9 @@ body .suggestions-title.wst-title {
 
 .chat-viewport { zoom:var(--w-ui-scale);bottom:calc(52vh / var(--w-ui-scale)); }
 .chat-messages-wrap { max-height:calc(38vh / var(--w-ui-scale)); }
+
+/* 1.1.3: a name colour bought in the server store - a soft glow so it reads on the paper */
+.chat-sender-store {
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(232, 184, 74, 0.45);
+}

@@ -201,3 +201,6 @@ Config.Ranks = {
 
 -- 1.1.2: exports.w_vip:Tier (1..5) -> its key in Config.Ranks
 Config.VipTiers = { 'vip_bronze', 'vip_silver', 'vip_gold', 'vip_platinum', 'vip_diamond' }
+
+-- 1.1.3 (2026-10-21): the colour of a name bought in the server store («لون اسم مميز في الدردشة»)
+Config.StoreNameColor = '#E8B84A'
