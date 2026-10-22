@@ -646,7 +646,11 @@ local function handleAnnounce(source, args)
 end
 
 chatCommand('ann', handleAnnounce, false)
-chatCommand('announce', handleAnnounce, false)
+-- /announce belongs to w_admin when it is on the server (its rights, its log on both panels); two
+-- resources holding one command name swap owners on every hot restart (2026-10-22)
+if GetResourceState('w_admin') == 'missing' then
+    chatCommand('announce', handleAnnounce, false)
+end
 
 -- إرسال قائمة الاقتراحات المبدئية عند انضمام اللاعب
 local defaultSuggestions = {
