@@ -1,11 +1,13 @@
 local WCore = nil
 
+-- the QB-shaped core (Wraith Core or RSG) through w_lib; VORP has none (its core has no Functions table), so there
+-- WCore stays nil and the name and job come from w_lib's framework module (2026-10-28, VORP / RSG support)
 CreateThread(function()
-    while not WCore do
-        if exports['w_core'] then
-            pcall(function()
-                WCore = exports['w_core']:GetCoreObject()
-            end)
+    for _ = 1, 150 do
+        local ok, core = pcall(function() return w.framework:getCoreObject() end)
+        if ok and type(core) == 'table' and type(core.Functions) == 'table' and core.Functions.GetPlayer then
+            WCore = core
+            return
         end
         Wait(200)
     end
@@ -67,6 +69,12 @@ local function hasPlayerJob(source, jobName)
         if Player and Player.PlayerData and Player.PlayerData.job then
             return Player.PlayerData.job.name == jobName
         end
+        return false
+    end
+    local ok, user = pcall(function() return w.framework:getUser(source) end)
+    if ok and user and user.getJob then
+        local okJob, job = pcall(function() return user:getJob() end)
+        return okJob and job == jobName
     end
     return false
 end
