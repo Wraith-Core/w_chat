@@ -655,8 +655,10 @@ end
 
 chatCommand('ann', handleAnnounce, false)
 -- /announce belongs to w_admin when it is on the server (its rights, its log on both panels); two
--- resources holding one command name swap owners on every hot restart (2026-10-22)
-if GetResourceState('w_admin') == 'missing' then
+-- resources holding one command name swap owners on every hot restart (2026-10-22).
+-- 1.1.7: w_connector 2.2.2 holds it whenever w_admin is not running (the website decides who may), so
+-- this one is only for a server that has neither
+if GetResourceState('w_admin') == 'missing' and GetResourceState('w_connector') == 'missing' then
     chatCommand('announce', handleAnnounce, false)
 end
 
