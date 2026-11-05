@@ -39,6 +39,7 @@
   "messages": {
     "no_permission": "You do not have permission to use this command.",
     "invalid_id": "Invalid citizen ID or the player is offline.",
+    "commands_only": "The chat is for commands only. Start with / such as /me",
     "missing_text": "Please provide a message after the command.",
     "slow_down": "Slow down, wait a moment before you send again.",
     "cleared_all": "The chat has been cleared by administration.",

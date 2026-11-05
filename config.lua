@@ -6,6 +6,10 @@ Config.DefaultLocale = 'ar'
 -- مدة بقاء الرسائل مرئية قبل التلاشي التلقائي (بالمللي ثانية)
 Config.FadeTimeout = 8500
 
+-- الشات للأوامر فقط (طلب المالك 2026-11-06): الكلام العادي بلا / لا يُرسل لأحد، وأمر /ooc مقفل.
+-- (Commands only: plain text is not sent to anyone and /ooc is off. false = the old public OOC chat.)
+Config.CommandsOnly = true
+
 -- الحد الأقصى لطول الرسالة
 Config.MaxMessageLength = 250
 Config.FloodMax = 6           -- messages a player may send (chat + chat commands) per window; more are dropped

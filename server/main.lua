@@ -250,6 +250,12 @@ RegisterNetEvent('w_chat:server:sendMessage', function(rawText)
         return
     end
 
+    -- Commands only (owner 2026-11-06): plain text goes to nobody; the writer is told why.
+    if Config.CommandsOnly then
+        TriggerClientEvent('w_chat:client:addSystemMessage', src, locale('messages.commands_only') or 'الشات للأوامر فقط. اكتب الأمر بعد علامة /')
+        return
+    end
+
     -- الرسائل العادية بدون أمر تذهب إلى OOC (أو العام)
     local name = getPlayerDisplayName(src)
     local rank = getPlayerRank(src)
@@ -312,6 +318,10 @@ chatCommand('l', handleLocalChat, false)
 -- 1. أمر OOC
 chatCommand('ooc', function(source, args, raw)
     if source == 0 then return end
+    if Config.CommandsOnly then
+        TriggerClientEvent('w_chat:client:addSystemMessage', source, locale('messages.commands_only') or 'الشات للأوامر فقط. اكتب الأمر بعد علامة /')
+        return
+    end
     local text = table.concat(args, ' ')
     if text == '' then
         TriggerClientEvent('w_chat:client:addSystemMessage', source, locale('messages.missing_text') or 'يرجى كتابة الرسالة.')
@@ -684,6 +694,9 @@ local defaultSuggestions = {
 RegisterNetEvent('w_chat:server:requestSuggestions', function()
     local src = source
     for i = 1, #defaultSuggestions do
-        TriggerClientEvent('chat:addSuggestion', src, defaultSuggestions[i].name, defaultSuggestions[i].help, defaultSuggestions[i].params)
+        local sg = defaultSuggestions[i]
+        if not (Config.CommandsOnly and sg.name == '/ooc') then   -- /ooc is off in commands-only mode
+            TriggerClientEvent('chat:addSuggestion', src, sg.name, sg.help, sg.params)
+        end
     end
 end)
