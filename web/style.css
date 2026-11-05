@@ -129,7 +129,7 @@ html, body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: rgba(17, 17, 17, .9);
+  background: rgba(21, 19, 19, .9);
   -webkit-mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
   mask: var(--w-tex-band-sm) center / 100% 100% no-repeat;
 }
@@ -267,7 +267,7 @@ html, body {
   flex-direction: column;
   width: 100%;
   padding: calc(11 * var(--ws-px)) calc(14 * var(--ws-px));
-  background: radial-gradient(130% 90% at 50% 0%, rgba(25, 25, 25, .96) 0%, rgba(17, 17, 17, .97) 42%, rgba(10, 10, 10, .98) 100%);
+  background: radial-gradient(130% 90% at 50% 0%, rgba(28, 25, 25, .96) 0%, rgba(21, 19, 19, .97) 42%, rgba(11, 10, 10, .98) 100%);
   box-shadow: 0 calc(16 * var(--ws-px)) calc(45 * var(--ws-px)) calc(-12 * var(--ws-px)) rgba(0, 0, 0, .9);
   border: none;
   pointer-events: auto;
@@ -281,7 +281,7 @@ html, body {
   inset: calc(-3 * var(--ws-px)) calc(-5 * var(--ws-px));
   z-index: -1;
   pointer-events: none;
-  background: rgba(10, 10, 10, .91);
+  background: rgba(11, 10, 10, .91);
   -webkit-mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
   mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
 }
@@ -496,7 +496,7 @@ html, body {
   left: 0;
   right: 0;
   max-height: calc(282 * var(--ws-px));
-  background: radial-gradient(130% 90% at 50% 0%, rgba(25, 25, 25, .96) 0%, rgba(17, 17, 17, .97) 42%, rgba(10, 10, 10, .98) 100%);
+  background: radial-gradient(130% 90% at 50% 0%, rgba(28, 25, 25, .96) 0%, rgba(21, 19, 19, .97) 42%, rgba(11, 10, 10, .98) 100%);
   box-shadow: 0 calc(16 * var(--ws-px)) calc(45 * var(--ws-px)) calc(-12 * var(--ws-px)) rgba(0, 0, 0, .9);
   border: none;
   display: flex;
@@ -513,7 +513,7 @@ html, body {
   inset: calc(-3 * var(--ws-px)) calc(-5 * var(--ws-px));
   z-index: -1;
   pointer-events: none;
-  background: rgba(10, 10, 10, .91);
+  background: rgba(11, 10, 10, .91);
   -webkit-mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
   mask: var(--w-tex-sheet) center / 100% 100% no-repeat;
 }
