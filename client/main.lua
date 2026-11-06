@@ -34,6 +34,7 @@ end)
 local function openChat()
     if chatOpen then return end
     chatOpen = true
+    TriggerEvent('w_chat:client:opened')
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = 'OPEN_CHAT'
@@ -199,24 +200,101 @@ RegisterNetEvent('chat:addMessage', function(data)
 end)
 
 -- دعم إضافة وحذف الاقتراحات (Suggestions)
+-- 1.1.11 (owner 2026-11-06): nothing goes to the page straight away. Every suggestion (chat:addSuggestion and the
+-- plural chat:addSuggestions that w_core / w_lib's addCommand send - it was not handled before, so their
+-- commands never showed) is kept here, and the server says which of them this player may SEE
+-- (w_chat:server:filterSuggestions). Staff also get our resources' commands without a help text.
+local known = {}          -- lower name without '/' -> { name = '/x', help, params }
+local shown = {}          -- names on the page now
+local flushPending, lastFlush = false, 0
+
+local function clientCommands()
+    local out = {}
+    local ok, list = pcall(GetRegisteredCommands)
+    if not ok or type(list) ~= 'table' then return out end
+    for _, c in ipairs(list) do
+        local name, res = type(c) == 'table' and c.name, type(c) == 'table' and c.resource
+        if type(name) == 'string' and type(res) == 'string' and not name:find('^[%+%-]') then
+            for _, pat in ipairs(Config.StaffCommandResources or {}) do
+                if res:find(pat) then out[#out + 1] = name:lower() break end
+            end
+        end
+    end
+    return out
+end
+
+local function flushSuggestions()
+    lastFlush = GetGameTimer()
+    local names, seen = {}, {}
+    for name in pairs(known) do names[#names + 1] = name; seen[name] = true end
+    for _, name in ipairs(clientCommands()) do
+        if not seen[name] then names[#names + 1] = name; seen[name] = true end
+    end
+    TriggerServerEvent('w_chat:server:filterSuggestions', names)
+end
+
+local function scheduleFlush()
+    if flushPending then return end
+    flushPending = true
+    SetTimeout(1200, function()
+        flushPending = false
+        flushSuggestions()
+    end)
+end
+
+local function remember(name, help, params)
+    if type(name) ~= 'string' or name == '' then return end
+    local key = name:gsub('^/', ''):lower()
+    known[key] = { name = '/' .. key, help = type(help) == 'string' and help or '', params = type(params) == 'table' and params or {} }
+    scheduleFlush()
+end
+
 RegisterNetEvent('chat:addSuggestion', function(name, help, params)
-    SendNUIMessage({
-        action = 'ADD_SUGGESTION',
-        data = {
-            name = name,
-            help = help or '',
-            params = params or {}
-        }
-    })
+    remember(name, help, params)
+end)
+
+RegisterNetEvent('chat:addSuggestions', function(list)
+    if type(list) ~= 'table' then return end
+    if list.name then list = { list } end                 -- w_lib's addCommand sends one at a time too
+    for _, sg in pairs(list) do
+        if type(sg) == 'table' then remember(sg.name, sg.help, sg.params) end
+    end
 end)
 
 RegisterNetEvent('chat:removeSuggestion', function(name)
-    SendNUIMessage({
-        action = 'REMOVE_SUGGESTION',
-        data = {
-            name = name
-        }
-    })
+    if type(name) ~= 'string' then return end
+    local key = name:gsub('^/', ''):lower()
+    known[key] = nil
+    shown[key] = nil
+    SendNUIMessage({ action = 'REMOVE_SUGGESTION', data = { name = '/' .. key } })
+end)
+
+RegisterNetEvent('w_chat:client:allowedSuggestions', function(allowed, extra)
+    local now = {}
+    for _, name in ipairs(type(allowed) == 'table' and allowed or {}) do
+        if type(name) == 'string' then
+            now[name] = true
+            local sg = known[name] or { name = '/' .. name, help = '', params = {} }
+            SendNUIMessage({ action = 'ADD_SUGGESTION', data = sg })
+        end
+    end
+    for _, e in ipairs(type(extra) == 'table' and extra or {}) do
+        if type(e) == 'table' and type(e.name) == 'string' and not now[e.name] then
+            now[e.name] = true
+            SendNUIMessage({ action = 'ADD_SUGGESTION', data = { name = '/' .. e.name, help = '', params = {} } })
+        end
+    end
+    for name in pairs(shown) do
+        if not now[name] then SendNUIMessage({ action = 'REMOVE_SUGGESTION', data = { name = '/' .. name } }) end
+    end
+    shown = now
+end)
+
+-- the first list once the other resources sent theirs; again on opening the chat after a minute
+-- (a rank given meanwhile shows its commands)
+SetTimeout(4000, scheduleFlush)
+AddEventHandler('w_chat:client:opened', function()
+    if GetGameTimer() - lastFlush > 60000 then scheduleFlush() end
 end)
 
 -- دالة مساعدة لجلب الوقت بتنسيق 00:00
@@ -230,6 +308,11 @@ end
 -- عرض النصوص ثلاثية الأبعاد فوق رأس الشخصية (3D Floating Text)
 -- ─────────────────────────────────────────────────────────────────────────────
 if Config.Enable3DText then
+    -- 1.1.11: the text goes to w_lib's page, where HTML is allowed: escape it
+    local function escapeHtml(text)
+        return (tostring(text):gsub('[&<>"\']', { ['&'] = '&amp;', ['<'] = '&lt;', ['>'] = '&gt;', ['"'] = '&quot;', ["'"] = '&#39;' }))
+    end
+
     RegisterNetEvent('w_chat:client:show3DText', function(targetSrc, text, color)
         local targetPed = GetPlayerPed(GetPlayerFromServerId(targetSrc))
         if not DoesEntityExist(targetPed) then return end
@@ -237,24 +320,16 @@ if Config.Enable3DText then
         local id = #activeTexts3D + 1
         activeTexts3D[id] = {
             ped = targetPed,
-            text = text,
+            text = escapeHtml(text),
             color = chatTone(color),
             time = GetGameTimer() + (Config.Display3DDuration or 7000)
         }
     end)
 
-    local function DrawText3D(x, y, z, text, color)
-        local onScreen, _x, _y = GetScreenCoordFromWorldCoord(x, y, z)
-        if not onScreen then return end
-
-        SetTextScale(0.35, 0.35)
-        local r, g, b = color[1], color[2], color[3]
-        SetTextColor(r, g, b, 220)
-        SetTextCentre(1)
-
-        -- استخدام نمط الخط المناسب لـ RedM
-        local str = CreateVarString(10, "LITERAL_STRING", text)
-        DisplayText(str, _x, _y)
+    -- 1.1.11: drawn by w_lib's page (the game font has no Arabic letters)
+    local function DrawText3D(x, y, z, text, color, id)
+        local r, g, b = tonumber(color and color[1]) or 242, tonumber(color and color[2]) or 242, tonumber(color and color[3]) or 242
+        exports.w_lib:DrawText3D(x, y, z, ('<span style="color:rgb(%d,%d,%d)">%s</span>'):format(r, g, b, text), id)
     end
 
     CreateThread(function()
@@ -269,7 +344,7 @@ if Config.Enable3DText then
                     if now < v.time and DoesEntityExist(v.ped) then
                         local pedCoords = GetPedBoneCoords(v.ped, 12844, 0.0, 0.0, 0.0) -- Head bone
                         if #(myCoords - pedCoords) < 18.0 then
-                            DrawText3D(pedCoords.x, pedCoords.y, pedCoords.z + 0.35, v.text, v.color)
+                            DrawText3D(pedCoords.x, pedCoords.y, pedCoords.z + 0.35, v.text, v.color, 'w_chat:3d:' .. k)
                         end
                     else
                         activeTexts3D[k] = nil

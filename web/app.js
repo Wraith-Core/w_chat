@@ -206,6 +206,7 @@
     // Body
     const body = document.createElement('div');
     body.className = 'chat-body';
+    body.dir = 'auto';
     body.innerHTML = formatMessageText(data.message || '');
     card.appendChild(body);
 
@@ -264,6 +265,9 @@
   ];
 
   const updateChannelIndicator = (val) => {
+    // 1.1.11 (owner): the line runs the way its first letter reads - a /command or English left to right,
+    // Arabic right to left; empty keeps the Arabic placeholder on the right
+    inputEl.dir = val.trim() === '' ? 'rtl' : 'auto';
     const trimmed = val.trimStart();
     const words = trimmed.split(' ');
     const cmd = words[0].toLowerCase();

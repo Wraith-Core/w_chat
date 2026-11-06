@@ -21,6 +21,22 @@ Config.DefaultKey = 'T'
 -- هل تظهر نصوص 3D ثلاثية الأبعاد فوق رأس الشخصية عند كتابة /me و /do؟
 Config.Enable3DText = true
 Config.Display3DDuration = 7000 -- مدة بقاء النص الثلاثي الأبعاد بالمللي ثانية
+-- 1.1.11 (owner 2026-11-06): /me is shown ONLY above the player's head, never written in the chat
+-- (with Enable3DText false it falls back to the chat line)
+Config.MeAboveHeadOnly = true
+
+-- 1.1.11 (owner 2026-11-06): the command list under the input. A player sees only the commands below (plus any
+-- command his own ACE allows, 'command.<name>'); staff (ACE 'command' / 'wcore.admin' / 'admin') see every
+-- command they may run, of our resources (w_* / wraith_*) too. Names without the slash.
+Config.PlayerCommands = {
+    'local', 'l', 'ooc', 'me', 'do', 'w', 'whisper', 's', 'shout', 'try', 'roll', 'pm', 'clear',
+    'vip', 'changename', 'mission', 'hazira', 'map', 'viewmap', 'trail', 'minimap', 'pausemenu',
+    'pets', 'petcall', 'petfollow', 'petstay', 'dismisspet', 'satchel', 'furniture', 'planepose',
+}
+-- shown only to the job (or staff); the job names are Config.Channels.<name>.job
+Config.JobCommands = { police = 'police', medic = 'medic' }
+-- resources whose commands staff see even without a help text
+Config.StaffCommandResources = { '^w_', '^wraith_' }
 
 -- مسافات قنوات القرب (بالأمتار)
 Config.Distances = {

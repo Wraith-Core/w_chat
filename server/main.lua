@@ -371,6 +371,21 @@ chatCommand('me', function(source, args, raw)
         icon = Config.Channels.me.icon,
         time = os.date('%H:%M')
     }
+    -- 1.1.11 (owner 2026-11-06): /me is shown only above the head, to the players near enough to see it
+    if Config.Enable3DText and Config.MeAboveHeadOnly ~= false then
+        local ped = GetPlayerPed(source)
+        if not DoesEntityExist(ped) then return end
+        local coords = GetEntityCoords(ped)
+        local players = GetPlayers()
+        for i = 1, #players do
+            local targetSrc = tonumber(players[i])
+            local targetPed = GetPlayerPed(targetSrc)
+            if DoesEntityExist(targetPed) and #(coords - GetEntityCoords(targetPed)) <= Config.Distances.Me then
+                TriggerClientEvent('w_chat:client:show3DText', targetSrc, source, '* ' .. text .. ' *', {242, 242, 242})
+            end
+        end
+        return
+    end
     sendProximityMessage(source, Config.Distances.Me, payload, { text = '* ' .. text .. ' *', color = {242, 242, 242} })
 end, false)
 
@@ -699,4 +714,86 @@ RegisterNetEvent('w_chat:server:requestSuggestions', function()
             TriggerClientEvent('chat:addSuggestion', src, sg.name, sg.help, sg.params)
         end
     end
+end)
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 1.1.11 (owner 2026-11-06): which commands a player SEES in the list under the input
+--   Every suggestion any resource sends (chat:addSuggestion(s)) and the client's own commands go through
+--   this filter before the page shows them. A player sees Config.PlayerCommands, his job's commands and
+--   any command his ACE allows; staff see every command they may run, plus the commands of our resources
+--   (Config.StaffCommandResources) that nobody wrote a help text for. Only what is shown changes here:
+--   running a command is still checked by the command itself.
+-- ─────────────────────────────────────────────────────────────────────────────
+local playerSet = {}
+for _, name in ipairs(Config.PlayerCommands or {}) do playerSet[name:lower()] = true end
+
+local function ourResource(res)
+    if type(res) ~= 'string' then return false end
+    for _, pat in ipairs(Config.StaffCommandResources or {}) do
+        if res:find(pat) then return true end
+    end
+    return false
+end
+
+-- server commands by name -> resource (refreshed at most every 30 s)
+local serverCmds, serverCmdsAt = {}, 0
+local function serverCommands()
+    local now = GetGameTimer()
+    if now - serverCmdsAt > 30000 or serverCmdsAt == 0 then
+        local map = {}
+        for _, c in ipairs(GetRegisteredCommands() or {}) do
+            if type(c) == 'table' and type(c.name) == 'string' then map[c.name:lower()] = c.resource or '' end
+        end
+        serverCmds, serverCmdsAt = map, now
+    end
+    return serverCmds
+end
+
+local function maySee(src, name, staff)
+    if Config.CommandsOnly and name == 'ooc' then return false end
+    if playerSet[name] then return true end
+    local channel = Config.JobCommands and Config.JobCommands[name]
+    if channel then
+        local ch = Config.Channels[channel]
+        return staff or (ch and ch.job and hasPlayerJob(src, ch.job)) or false
+    end
+    if IsPlayerAceAllowed(src, 'command.' .. name) then return true end
+    -- a command only the client knows (no server side to check): staff only
+    return staff and serverCommands()[name] == nil
+end
+
+local filterAt = {}
+AddEventHandler('playerDropped', function() filterAt[source] = nil end)
+
+RegisterNetEvent('w_chat:server:filterSuggestions', function(names)
+    local src = source
+    if type(names) ~= 'table' then return end
+    local now = GetGameTimer()
+    if filterAt[src] and now - filterAt[src] < 1000 then return end   -- the client batches; once a second at most
+    filterAt[src] = now
+    local staff = isPlayerAdmin(src)
+    local allowed, n = {}, 0
+    for i = 1, math.min(#names, 800) do
+        local name = names[i]
+        if type(name) == 'string' and #name <= 64 then
+            name = name:gsub('^/', ''):lower()
+            if name ~= '' and maySee(src, name, staff) then
+                n = n + 1
+                allowed[n] = name
+            end
+        end
+    end
+    -- staff also get every command of our resources that nobody suggested
+    local extra = {}
+    if staff then
+        local seen = {}
+        for i = 1, #names do if type(names[i]) == 'string' then seen[names[i]:gsub('^/', ''):lower()] = true end end
+        for name, res in pairs(serverCommands()) do
+            if not seen[name] and ourResource(res) and not name:find('^[%+%-]')
+                and IsPlayerAceAllowed(src, 'command.' .. name) then
+                extra[#extra + 1] = { name = name, resource = res }
+            end
+        end
+    end
+    TriggerClientEvent('w_chat:client:allowedSuggestions', src, allowed, extra, staff)
 end)
