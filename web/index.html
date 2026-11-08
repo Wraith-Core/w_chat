@@ -1,88 +1,52 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" style="background: transparent !important; background-color: transparent !important;">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>w_chat</title>
-  
-  <!-- Font Awesome Free 6.5.1, solid set only, shipped with the resource (no request leaves the game) -->
-  <link rel="stylesheet" href="vendor/fontawesome/css/fontawesome.min.css" />
-  <link rel="stylesheet" href="vendor/fontawesome/css/solid.min.css" />
-  
-  <!-- the Wraith theme: style.css reads its tokens; store-theme.css @imports theme/tokens.css + fonts.css; base.css adds the w-* primitives -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cfx-nui-w_lib/nui/assets/store-theme.css">
-  <link rel="stylesheet" href="https://cfx-nui-w_lib/nui/assets/store-adapters.css">
-  <link rel="stylesheet" href="https://cfx-nui-w_lib/nui/theme/base.css">
-  <script defer src="https://cfx-nui-w_lib/nui/assets/store-theme-bridge.js"></script>
 </head>
-<body data-store-theme="chat" style="background: transparent !important; background-color: transparent !important;">
-  <div id="chat-app" class="chat-viewport">
-    
-    <!-- حاوية الرسائل -->
-    <div id="chat-messages-wrap" class="chat-messages-wrap is-idle">
-      <div id="chat-messages" class="chat-messages">
-        <!-- يتم إدراج الرسائل هنا ديناميكياً بواسطة app.js -->
-      </div>
-    </div>
+<body>
+  <!-- 1.2.0: the board kit (src/kit.css + src/chat.css); every word comes from the locales (SET_LOCALE) -->
+  <div id="chat-root" class="wf chat-root is-rtl">
+    <div id="chat-app" class="chat-viewport">
 
-    <!-- صندوق الإدخال التفاعلي -->
-    <div id="chat-input-wrapper" class="chat-input-wrapper" style="display: none;">
-      
-      <!-- إطار الزوايا الغربية المشطوفة (8-cut corners) -->
-      <div class="wc-frame" aria-hidden="true">
-        <span class="wc-fr-t"></span><span class="wc-fr-b"></span>
-        <span class="wc-fr-l"></span><span class="wc-fr-r"></span>
-        <span class="wc-fr-tl"></span><span class="wc-fr-tr"></span>
-        <span class="wc-fr-bl"></span><span class="wc-fr-br"></span>
+      <!-- the feed: one torn ink slip per line -->
+      <div id="chat-messages-wrap" class="chat-messages-wrap is-idle">
+        <div id="chat-messages" class="chat-messages"></div>
       </div>
 
-      <!-- حقل إدخال الرسالة -->
-      <div class="input-row">
-        <div id="channel-badge" class="channel-badge">
-          <i id="channel-icon" class="fa-solid fa-comments"></i>
-          <span id="channel-name" dir="rtl">عام</span>
-        </div>
-        
-        <div class="input-plate">
-          <input 
-            type="text" 
-            id="chat-input" 
+      <!-- the line being typed: a torn card with the kit's field and band button -->
+      <div id="chat-input-wrapper" class="chat-input-wrapper" style="display: none;">
+        <div class="input-row">
+          <div id="channel-badge" class="channel-badge">
+            <span id="channel-name" dir="rtl"></span>
+          </div>
+          <input
+            type="text"
+            id="chat-input"
             dir="rtl"
-            class="chat-input" 
-            placeholder="اكتب رسالتك هنا... (استخدم / لعرض الأوامر)" 
-            autocomplete="off" 
-            spellcheck="false" 
+            class="wf-input chat-input"
+            placeholder=""
+            autocomplete="off"
+            spellcheck="false"
             maxlength="250"
           />
+          <button type="button" id="chat-submit-btn" class="wf-btn chat-submit-btn"><span id="chat-submit-label"></span></button>
         </div>
 
-        <button type="button" id="chat-submit-btn" class="chat-submit-btn" title="إرسال">
-          <i class="fa-solid fa-paper-plane"></i>
-        </button>
-      </div>
-
-      <!-- قائمة الإكمال التلقائي للاقتراحات والأوامر (تفتح للأسفل) -->
-      <div id="suggestions-box" class="suggestions-box" style="display: none;">
-        <div class="wc-frame" aria-hidden="true">
-          <span class="wc-fr-t"></span><span class="wc-fr-b"></span>
-          <span class="wc-fr-l"></span><span class="wc-fr-r"></span>
-          <span class="wc-fr-tl"></span><span class="wc-fr-tr"></span>
-          <span class="wc-fr-bl"></span><span class="wc-fr-br"></span>
-        </div>
-        <div class="suggestions-header">
-          <span class="suggestions-title"><i class="fa-solid fa-terminal"></i> الأوامر المتاحة</span>
-          <span class="suggestions-hint">اضغط <kbd class="w-key">Tab</kbd> أو <kbd class="w-key">Enter</kbd> للاختيار</span>
-        </div>
-        <div id="suggestions-list" class="suggestions-list">
-          <!-- يتم ملء الاقتراحات برمجياً -->
+        <!-- the commands list (opens downwards, under the line) -->
+        <div id="suggestions-box" class="suggestions-box" style="display: none;">
+          <div class="suggestions-header">
+            <span id="suggestions-title" class="suggestions-title"></span>
+            <span id="suggestions-hint" class="suggestions-hint"></span>
+          </div>
+          <div id="suggestions-list" class="suggestions-list wf-rows"></div>
         </div>
       </div>
 
     </div>
-
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

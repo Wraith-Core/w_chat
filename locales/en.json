@@ -3,7 +3,9 @@
     "placeholder": "Type your message... (use / for commands)",
     "send": "Send",
     "close_hint": "Press ESC to cancel or Enter to send",
-    "channel_general": "General"
+    "channel_general": "General",
+    "suggestions_title": "Commands",
+    "suggestions_hint": "Pick with {tab} or {enter}"
   },
   "tags": {
     "local": "LOCAL",
@@ -19,7 +21,8 @@
     "medic": "MEDIC",
     "admin": "ADMIN",
     "system": "SYSTEM",
-    "pm": "PM"
+    "pm": "PM",
+    "try": "TRY"
   },
   "commands": {
     "help_ooc": "Send an Out Of Character message",

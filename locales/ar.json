@@ -3,7 +3,9 @@
     "placeholder": "اكتب رسالتك هنا... (استخدم / لعرض الأوامر)",
     "send": "إرسال",
     "close_hint": "اضغط ESC للإلغاء أو Enter للإرسال",
-    "channel_general": "عام"
+    "channel_general": "عام",
+    "suggestions_title": "الأوامر المتاحة",
+    "suggestions_hint": "اختر بزر {tab} أو {enter}"
   },
   "tags": {
     "local": "محلي | Local",
@@ -19,7 +21,8 @@
     "medic": "الإسعاف",
     "admin": "الإدارة",
     "system": "النظام",
-    "pm": "رسالة خاصة"
+    "pm": "رسالة خاصة",
+    "try": "محاولة"
   },
   "commands": {
     "help_ooc": "إرسال رسالة عامة خارج نطاق تمثيل الشخصية",

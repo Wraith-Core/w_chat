@@ -1,0 +1,11 @@
+{
+  "name": "w_chat",
+  "private": true,
+  "version": "1.2.0",
+  "type": "module",
+  "description": "No npm install needed: vite (5.4) is the one in F:/Server RedM/Wraith Core/node_modules.",
+  "scripts": {
+    "dev": "node ../../../../../../node_modules/vite/bin/vite.js --port 5225 --strictPort",
+    "build": "node ../../../../../../node_modules/vite/bin/vite.js build"
+  }
+}

@@ -24,7 +24,18 @@ CreateThread(function()
             fadeTimeout = Config.FadeTimeout or 8500,
             placeholder = locale('ui.placeholder') or 'اكتب رسالتك هنا...',
             closeHint = locale('ui.close_hint') or 'اضغط ESC للإلغاء أو Enter للإرسال',
-            channelGeneral = locale('ui.channel_general') or 'عام'
+            channelGeneral = locale('ui.channel_general') or 'عام',
+            -- 1.2.0: the words the page used to write itself (the send button, the commands list,
+            -- the channel shown while typing a command) come from the locales too
+            send = locale('ui.send'),
+            suggestionsTitle = locale('ui.suggestions_title'),
+            suggestionsHint = locale('ui.suggestions_hint'),
+            channels = {
+                ['local'] = locale('tags.local'), me = locale('tags.me'), ['do'] = locale('tags.do'),
+                whisper = locale('tags.whisper'), shout = locale('tags.shout'), try = locale('tags.try'),
+                roll = locale('tags.roll'), pm = locale('tags.pm'), police = locale('tags.police'),
+                medic = locale('tags.medic'), admin = locale('tags.admin'),
+            }
         }
     })
     chatLoaded = true

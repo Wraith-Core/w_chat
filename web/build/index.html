@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>w_chat</title>
+  <script type="module" src="./assets/app.js"></script>
+  <link rel="stylesheet" href="./assets/app.css">
+</head>
+<body>
+  <!-- 1.2.0: the board kit (src/kit.css + src/chat.css); every word comes from the locales (SET_LOCALE) -->
+  <div id="chat-root" class="wf chat-root is-rtl">
+    <div id="chat-app" class="chat-viewport">
+
+      <!-- the feed: one torn ink slip per line -->
+      <div id="chat-messages-wrap" class="chat-messages-wrap is-idle">
+        <div id="chat-messages" class="chat-messages"></div>
+      </div>
+
+      <!-- the line being typed: a torn card with the kit's field and band button -->
+      <div id="chat-input-wrapper" class="chat-input-wrapper" style="display: none;">
+        <div class="input-row">
+          <div id="channel-badge" class="channel-badge">
+            <span id="channel-name" dir="rtl"></span>
+          </div>
+          <input
+            type="text"
+            id="chat-input"
+            dir="rtl"
+            class="wf-input chat-input"
+            placeholder=""
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="250"
+          />
+          <button type="button" id="chat-submit-btn" class="wf-btn chat-submit-btn"><span id="chat-submit-label"></span></button>
+        </div>
+
+        <!-- the commands list (opens downwards, under the line) -->
+        <div id="suggestions-box" class="suggestions-box" style="display: none;">
+          <div class="suggestions-header">
+            <span id="suggestions-title" class="suggestions-title"></span>
+            <span id="suggestions-hint" class="suggestions-hint"></span>
+          </div>
+          <div id="suggestions-list" class="suggestions-list wf-rows"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

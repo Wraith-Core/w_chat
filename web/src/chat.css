@@ -1,0 +1,341 @@
+/* ============================================================================
+   w_chat · the chat's own parts on the board kit (kit.css, loaded first; 1.2.0)
+
+   Ink and paper in black and white, one red. The kit gives the inks, the faces, the field
+   (wf-input), the band button (wf-btn), the rows (wf-row: the cursor is the paper band) and the
+   textures (--tex-tear / --tex-grain / --tex-band / --tex-band-sm, set by main.js).
+
+   The chat is HUD: it stays at the real left edge of the screen in both languages (the game's own
+   chat corner, and w_hud's money column holds the top right), raised a little above the middle, and
+   is never moved into the 16:9 frame on an ultrawide. Inside it everything is logical: Arabic lines
+   start on the right, English on the left.
+
+   Faces: the message in the reading face (EB Garamond / Lalezar), the channel, the rank and the
+   sender in the label face, the time in EB Garamond lining figures, left to right.
+
+   Colour: a channel is told by its word, not a hue. A staff rank is a paper chip; the store's VIP
+   tiers (w_vip) keep their own band and ink, and a name colour bought in the store keeps its colour
+   (paid content, 1.1.2 / 1.1.3). The one red is a mark: the torn ribbon at the start of a line from
+   the staff or a line another script sent as an error. Never red letters, never a red slab.
+   ============================================================================ */
+
+/* the kit's stage covers the screen; the chat lets every click through but its own parts */
+.wf.chat-root { pointer-events: none; z-index: 999; }
+
+/* ── the place: the real left edge, a little above the middle ─────────────── */
+.chat-viewport {
+  position: absolute;
+  left: 1.4rem;
+  bottom: 52vh;
+  width: clamp(18rem, 30vw, 25rem);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+/* ── the feed ─────────────────────────────────────────────────────────────── */
+.chat-messages-wrap {
+  position: relative;
+  width: 100%;
+  max-height: 38vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 0.45rem;
+  opacity: 1;
+  transition: opacity 0.4s var(--ease);
+  pointer-events: auto;
+}
+.chat-messages-wrap.is-idle { opacity: 0; pointer-events: none; }
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.1rem 0.15rem 0.3rem;
+  padding-inline-end: 0.3rem;
+  /* one shadow for the whole feed (cheaper than one per line) */
+  filter: drop-shadow(0 0.3rem 0.5rem rgba(0, 0, 0, 0.5));
+}
+.chat-messages::-webkit-scrollbar { width: 3px; height: 0; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--rule-2); border-radius: 0; }
+.chat-messages::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+
+/* one line: a torn ink slip (the kit's HUD sheet), the tear on a layer under the text so the
+   ribbon and the shadow are never cut by it */
+.chat-message {
+  position: relative;
+  isolation: isolate;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  padding: 0.5rem 1rem 0.6rem;
+  text-align: start;
+  pointer-events: auto;
+  animation: chat-rise 200ms var(--ease) both;
+}
+.chat-message::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgba(21, 19, 19, 0.92);
+  background-image: linear-gradient(160deg, rgba(242, 242, 242, 0.035), rgba(242, 242, 242, 0) 55%);
+  box-shadow: inset 0 0 0.9rem rgba(242, 242, 242, 0.09);
+  -webkit-mask-box-image: var(--tex-tear) 64 fill / 0.75rem round;
+}
+@keyframes chat-rise {
+  from { opacity: 0; transform: translate3d(0, 0.35rem, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* a line from the staff, and a line another script sent as an error (red in its chat:addMessage
+   colour): the one red, a torn ribbon at the line's start. The letters stay paper. */
+.chat-message[data-channel="admin"]::after,
+.chat-message[data-tone="error"]::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0.2rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 0.3rem;
+  background: var(--red);
+  -webkit-mask-box-image: var(--tex-tear) 64 fill / 0.2rem round;
+  pointer-events: none;
+}
+
+.chat-message-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* the channel's word: the label face, dim paper */
+.chat-badge {
+  flex: none;
+  color: var(--paper-dim);
+  font: 500 0.72rem/1.25 var(--f-label);
+  white-space: nowrap;
+}
+.chat-badge[dir="ltr"] { font-family: 'EB Garamond', Georgia, serif; font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-size: 0.84rem; }
+.chat-badge[dir="rtl"] { font-weight: 700; letter-spacing: 0; }
+
+/* a staff rank: a paper chip; a VIP tier from the store (w_vip): the chip in the tier's own colours */
+.chat-badge.chat-rank-badge {
+  align-self: center;
+  padding: 0.04rem 0.4rem 0.08rem;
+  border: 1px solid rgba(242, 242, 242, 0.55);
+  color: var(--paper);
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+.chat-badge.chat-rank-badge[dir="ltr"] { font-size: 0.8rem; }
+.chat-badge.chat-rank-badge[data-tier] {
+  border-color: var(--rank-band, var(--paper));
+  background: var(--rank-band, var(--paper));
+  color: var(--rank-ink, var(--ink));
+}
+
+.chat-sender {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--paper);
+  font: 500 0.82rem/1.25 var(--f-label);
+}
+[dir="rtl"] .chat-sender { font-weight: 700; }
+/* 1.1.3: a name colour bought in the server store keeps its colour (1.2.0: no glow) */
+.chat-sender-store { font-weight: 700; }
+
+.chat-time {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--paper-faint);
+  font: 500 0.8rem/1.25 'EB Garamond', Georgia, serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* the message: the reading face */
+.chat-body {
+  color: var(--paper);
+  font: 400 0.98rem/1.4 var(--f-serif);
+  word-break: break-word;
+  user-select: text;
+  text-shadow: 0 1px 0.3rem rgba(0, 0, 0, 0.45);
+}
+.is-rtl .chat-body { font-size: 0.94rem; line-height: 1.6; }
+
+/* the chat colour codes (^1 - ^9, ~r~ ~b~ ..., ~COLOR_*~): black and white like Red Dead. The words
+   a sender marked keep their mark, not their hue (app.js formatMessageText): a loud code is paper
+   in a heavier weight, a cool or grey one is dim paper. Never red letters. */
+.chat-body .tone-hi { color: var(--paper); font-weight: 700; }
+.chat-body .tone-dim { color: var(--paper-dim); }
+
+/* ── the line being typed: a torn card (the kit's card), the red ribbon of the card in use ──── */
+.chat-input-wrapper {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.6rem 0.85rem 0.6rem 0.95rem;
+  pointer-events: auto;
+  filter: drop-shadow(0 0.55rem 0.9rem rgba(0, 0, 0, 0.55));
+  animation: chat-rise 180ms var(--ease) both;
+}
+.chat-input-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--ink-3);
+  background-image: linear-gradient(160deg, rgba(242, 242, 242, 0.035), rgba(242, 242, 242, 0) 55%);
+  box-shadow: inset 0 0 1.4rem rgba(242, 242, 242, 0.15), inset 0 0 0.5rem rgba(242, 242, 242, 0.14);
+  -webkit-mask-box-image: var(--tex-tear) 64 fill / 0.95rem round;
+}
+.chat-input-wrapper::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0.15rem;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 0.35rem;
+  background: var(--red);
+  -webkit-mask-box-image: var(--tex-tear) 64 fill / 0.22rem round;
+  pointer-events: none;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+/* the channel the line will go to: the kit's kicker (label face, dim paper) */
+.channel-badge {
+  flex: none;
+  max-width: 8.5rem;
+  overflow: hidden;
+  color: var(--paper-dim);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 500 0.95rem/1.2 var(--f-label);
+}
+#channel-name[dir="ltr"] { font-family: 'EB Garamond', Georgia, serif; font-variant-caps: all-small-caps; letter-spacing: 0.1em; }
+#channel-name[dir="rtl"] { font-weight: 700; font-size: 0.86rem; letter-spacing: 0; }
+
+/* the field: the kit's wf-input (flat ink, paper underline while typing) */
+.chat-input.wf-input {
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+  user-select: text;
+}
+.chat-input.wf-input:focus { background: var(--ink-2); }
+.is-rtl .chat-input.wf-input { font-size: 0.95rem; }
+
+/* send: the kit's band button */
+.chat-submit-btn.wf-btn { flex: none; }
+
+/* ── the commands list, under the line: a torn card of kit rows ────────────── */
+.suggestions-box {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.95rem 0.7rem;
+  isolation: isolate;
+  z-index: 2;
+  filter: drop-shadow(0 0.55rem 0.9rem rgba(0, 0, 0, 0.55));
+}
+.suggestions-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--ink-2);
+  background-image: linear-gradient(160deg, rgba(242, 242, 242, 0.035), rgba(242, 242, 242, 0) 55%);
+  box-shadow: inset 0 0 1.25rem rgba(242, 242, 242, 0.11), inset 0 0 0.45rem rgba(242, 242, 242, 0.1);
+  -webkit-mask-box-image: var(--tex-tear) 64 fill / 0.95rem round;
+}
+
+.suggestions-header {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0 0.2rem 0.45rem;
+  border-bottom: 1px solid var(--rule);
+}
+/* the list's title: the kit's kicker */
+.suggestions-title {
+  color: var(--paper-dim);
+  font: 500 0.95rem/1.2 var(--f-label);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+.suggestions-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--paper-faint);
+  font: 500 0.82rem/1.2 var(--f-label);
+  white-space: nowrap;
+}
+/* a key cap: the kit's tag, in figures */
+.chat-key {
+  display: inline-block;
+  padding: 0.04rem 0.38rem 0.08rem;
+  border: 1px solid rgba(242, 242, 242, 0.35);
+  color: var(--paper-dim);
+  font: 500 0.78rem/1.1 'EB Garamond', Georgia, serif;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.suggestions-list {
+  max-height: calc(2.95rem * 5);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 0.2rem;
+}
+.suggestions-list::-webkit-scrollbar { width: 3px; }
+.suggestions-list::-webkit-scrollbar-thumb { background: var(--rule-2); }
+.suggestion-item.wf-row { padding: 0 0.7rem; }
+.suggestion-item.wf-row:last-child { border-bottom-color: transparent; }
+.suggestion-top { display: flex; align-items: baseline; gap: 0.5rem; }
+.suggestion-cmd {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-weight: 600;
+  font-size: 1.08rem;
+  unicode-bidi: isolate;
+}
+.suggestion-params { display: inline-flex; gap: 0.3rem; opacity: 0.62; font: 500 0.82rem/1.2 var(--f-label); }
+.suggestion-param-tag { unicode-bidi: isolate; }
+
+/* ── Arabic: never letter-spaced, never small caps ────────────────────────── */
+.is-rtl .suggestions-title,
+.is-rtl .suggestions-hint { font-variant-caps: normal; letter-spacing: 0; font-weight: 700; }
+.is-rtl .suggestions-title { font-size: 0.88rem; }
+.is-rtl .suggestions-hint { font-size: 0.78rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-message, .chat-input-wrapper { animation: none; }
+}
