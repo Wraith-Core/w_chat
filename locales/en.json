@@ -5,7 +5,11 @@
     "close_hint": "Press ESC to cancel or Enter to send",
     "channel_general": "General",
     "suggestions_title": "Commands",
-    "suggestions_hint": "Pick with {tab} or {enter}"
+    "suggestions_hint": "Pick with {tab} or {enter}",
+    "key_send": "Send",
+    "key_close": "Close",
+    "key_last": "Last message",
+    "key_pick": "Pick the command"
   },
   "tags": {
     "local": "LOCAL",
@@ -53,5 +57,22 @@
     "pm_from": "From [%s]: %s",
     "pm_to_sender": "To %s",
     "pm_from_sender": "From %s"
+  },
+  "say": {
+    "local": "Talk to the people around you only (20 m)",
+    "l": "Talk to the people around you only (20 m)",
+    "ooc": "Say something out of character",
+    "me": "Write what your character does",
+    "do": "Describe the place or your character's state",
+    "w": "Whisper to whoever is right next to you",
+    "s": "Shout so everyone in the area hears you",
+    "try": "Try something, a 50% chance it works",
+    "roll": "Roll a die from 1 to 100",
+    "pm": "Send a private message to a citizen ID (# in front for a server ID)",
+    "clear": "Clear the chat on your screen only",
+    "clearchat": "Clear the chat for every player (staff)",
+    "police": "An official notice from the law",
+    "medic": "An official notice from the doctors",
+    "ann": "A notice from the staff to the whole server"
   }
 }

@@ -297,21 +297,40 @@
   font: 500 0.82rem/1.2 var(--f-label);
   white-space: nowrap;
 }
-/* a key cap: the kit's tag, in figures */
+/* a key cap: the notebook's paper cap, an ink letter (the same cap as every key hint on the server) */
 .chat-key {
-  display: inline-block;
-  padding: 0.04rem 0.38rem 0.08rem;
-  border: 1px solid rgba(242, 242, 242, 0.35);
-  color: var(--paper-dim);
-  font: 500 0.78rem/1.1 'EB Garamond', Georgia, serif;
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.06em;
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.45em;
+  height: 1.45em;
+  padding: 0 0.38em;
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 0.78rem/1 'EB Garamond', Georgia, serif;
+  letter-spacing: 0.02em;
+  border-radius: 0.1em;
   direction: ltr;
   unicode-bidi: isolate;
 }
 
+/* notebook: the keys row under the line (Enter send · Esc close · Up last message; Tab pick while the list is open) */
+.chat-keys {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.2rem 0;
+  border-top: 1px solid var(--rule);
+  color: var(--paper-faint);
+  font: 500 0.8rem/1.2 var(--f-label);
+}
+.chat-keys:empty { display: none; }
+.chat-keys > span { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
+.is-rtl .chat-keys { font-weight: 700; font-size: 0.78rem; }
+
 .suggestions-list {
-  max-height: calc(2.95rem * 5);
+  max-height: calc(2.95rem * 5.2);
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: 0.2rem;
@@ -320,7 +339,22 @@
 .suggestions-list::-webkit-scrollbar-thumb { background: var(--rule-2); }
 .suggestion-item.wf-row { padding: 0 0.7rem; }
 .suggestion-item.wf-row:last-child { border-bottom-color: transparent; }
-.suggestion-top { display: flex; align-items: baseline; gap: 0.5rem; }
+/* notebook: one plain line per command - '/me <the action> — write what your character does'
+   (two lines at most when the words are long) */
+.suggestion-item.wf-row { height: auto; min-height: 2.6rem; padding-block: 0.4rem; }
+.suggestion-top {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  line-height: 1.35;
+}
+.suggestion-top > * + * { margin-inline-start: 0.45rem; }
+.suggestion-dash { color: var(--paper-faint); }
+.suggestion-help { font: 400 0.92rem/1.35 var(--f-serif); color: var(--paper-dim); }
+.suggestion-item.is-here .suggestion-help, .suggestion-item.is-here .suggestion-dash { color: inherit; opacity: 0.8; }
+.is-rtl .suggestion-help { font-weight: 700; font-size: 0.86rem; }
 .suggestion-cmd {
   font-family: 'EB Garamond', Georgia, serif;
   font-weight: 600;

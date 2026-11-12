@@ -2,6 +2,18 @@ local chatOpen = false
 local chatLoaded = false
 local activeTexts3D = {}
 
+--- The chat's own commands in plain words, in the player's language (locales say.<command>). A command
+--- another resource registers keeps the help text it sent.
+local SAY_COMMANDS = { 'local', 'l', 'ooc', 'me', 'do', 'w', 's', 'try', 'roll', 'pm', 'clear', 'clearchat', 'police', 'medic', 'ann' }
+local function sayLines()
+    local out = {}
+    for _, name in ipairs(SAY_COMMANDS) do
+        local text = locale('say.' .. name)
+        if type(text) == 'string' and text ~= '' and text ~= ('say.' .. name) then out[name] = text end
+    end
+    return out
+end
+
 -- تهيئة عند تشغيل السكربت
 CreateThread(function()
     Wait(500)
@@ -35,7 +47,10 @@ CreateThread(function()
                 whisper = locale('tags.whisper'), shout = locale('tags.shout'), try = locale('tags.try'),
                 roll = locale('tags.roll'), pm = locale('tags.pm'), police = locale('tags.police'),
                 medic = locale('tags.medic'), admin = locale('tags.admin'),
-            }
+            },
+            -- notebook: the keys row under the line, and one plain line per chat command (say.<command>)
+            keys = { send = locale('ui.key_send'), close = locale('ui.key_close'), last = locale('ui.key_last'), pick = locale('ui.key_pick') },
+            helps = sayLines(),
         }
     })
     chatLoaded = true

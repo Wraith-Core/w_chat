@@ -35,6 +35,10 @@
   // 1.2.0: every word comes from the locales through SET_LOCALE (client/main.lua)
   let defaultChannelName = '';
   let channelWords = {};
+  // notebook: the chat's own commands in plain words (say.<command>), the keys row's words
+  let helpWords = {};
+  let keyWords = {};
+  const keysEl = document.getElementById('chat-keys');
 
   // Post to Lua
   const post = (action, data = {}) => {
@@ -275,12 +279,14 @@
     selectedSuggestionIndex = 0;
     renderSuggestions();
     suggestionsBox.style.display = 'flex';
+    renderKeys();
   };
 
   const closeSuggestions = () => {
     suggestionsBox.style.display = 'none';
     filteredSuggestions = [];
     selectedSuggestionIndex = -1;
+    renderKeys();
   };
 
   // 1.2.0: the kit's row (wf-row): the cursor is the paper band (is-here). The arrows and the mouse move the
@@ -330,14 +336,23 @@
         top.appendChild(paramsSpan);
       }
 
-      main.appendChild(top);
-
-      if (sug.help) {
+      // notebook: what the command does, on the same line after a dash - the chat's own commands in the
+      // player's language (say.<command>), any other resource's command with the help text it sent
+      const said = helpWords[String(sug.name || '').replace(/^\//, '').toLowerCase()] || sug.help;
+      if (said) {
         const help = document.createElement('span');
-        help.className = 'wf-row-meta suggestion-help';
-        help.textContent = sug.help;
-        main.appendChild(help);
+        help.className = 'suggestion-help';
+        help.dir = 'auto';
+        help.textContent = said;
+        top.appendChild(document.createTextNode(' '));
+        const dash = document.createElement('span');
+        dash.className = 'suggestion-dash';
+        dash.textContent = '—';
+        top.appendChild(dash);
+        top.appendChild(help);
       }
+
+      main.appendChild(top);
       item.appendChild(main);
 
       item.addEventListener('mouseenter', () => {
@@ -368,6 +383,30 @@
         suggestionsHint.appendChild(document.createTextNode(part));
       }
     });
+  };
+
+  // notebook: the keys row under the line. With the commands list open the keys pick a command instead.
+  const renderKeys = () => {
+    if (!keysEl) return;
+    keysEl.innerHTML = '';
+    const listOpen = filteredSuggestions.length > 0;
+    const parts = listOpen
+      ? [[['Tab', 'Enter'], keyWords.pick], [['Esc'], keyWords.close]]
+      : [[['Enter'], keyWords.send], [['Esc'], keyWords.close], [['↑'], keyWords.last]];
+    parts.forEach(([caps, word]) => {
+      if (!word) return;
+      const part = document.createElement('span');
+      caps.forEach((cap) => {
+        const k = document.createElement('kbd');
+        k.className = 'chat-key';
+        k.textContent = cap;
+        part.appendChild(k);
+      });
+      part.appendChild(document.createTextNode(word));
+      keysEl.appendChild(part);
+    });
+    // the list's own hint ('Pick with Tab or Enter') says the same as the keys row: shown only without the row
+    suggestionsHint.style.display = keysEl.childElementCount > 0 ? 'none' : '';
   };
 
   const applySuggestion = (sug) => {
@@ -497,6 +536,8 @@
             setChannelName(defaultChannelName);
           }
           if (msg.data.fadeTimeout) fadeTimeout = msg.data.fadeTimeout;
+          if (msg.data.helps && typeof msg.data.helps === 'object') helpWords = msg.data.helps;
+          if (msg.data.keys && typeof msg.data.keys === 'object') { keyWords = msg.data.keys; renderKeys(); }
         }
         break;
     }
