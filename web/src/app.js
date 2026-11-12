@@ -116,9 +116,6 @@
     return r >= 150 && g <= 90 && b <= 90;
   };
 
-  // a configured badge colour: '#rgb' / '#rrggbb' / '#rrggbbaa' only (it goes into a style property)
-  const isColour = (v) => typeof v === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(v);
-
   // ── Wake & Fade Timer ────────────────────────────────────────────────────
   const wakeChat = () => {
     messagesWrap.classList.remove('is-idle');
@@ -157,12 +154,7 @@
     if (data.rank && data.rank.label) {
       const rankBadge = document.createElement('span');
       rankBadge.className = 'chat-badge chat-rank-badge';
-      // 1.1.2: a VIP tier (w_vip) wears its own band and ink; the staff ranks keep the paper chip
-      if (data.rank.tier && isColour(data.rank.bgColor) && isColour(data.rank.color)) {
-        rankBadge.dataset.tier = String(data.rank.tier);
-        rankBadge.style.setProperty('--rank-band', data.rank.bgColor);
-        rankBadge.style.setProperty('--rank-ink', data.rank.color);
-      }
+      // owner 2026-11-12: one look for every rank; a VIP tier's own colours (payload bgColor/color) are not drawn
       rankBadge.textContent = data.rank.label;
       meta.appendChild(rankBadge);
     }
@@ -172,11 +164,7 @@
       const sender = document.createElement('span');
       sender.className = 'chat-sender';
       sender.textContent = data.sender + (data.id ? ` [${data.id}]` : '');
-      // 1.1.3: a name colour bought in the server store
-      if (isColour(data.nameColor)) {
-        sender.style.color = data.nameColor;
-        sender.classList.add('chat-sender-store');
-      }
+      // owner 2026-11-12: every name in the one ink; a store-bought colour (payload nameColor) is not drawn
       meta.appendChild(sender);
     }
 

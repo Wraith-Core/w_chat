@@ -13,9 +13,9 @@
    Faces: the message in the reading face (EB Garamond / Lalezar), the channel, the rank and the
    sender in the label face, the time in EB Garamond lining figures, left to right.
 
-   Colour: a channel is told by its word, not a hue. A staff rank is a paper chip; the store's VIP
-   tiers (w_vip) keep their own band and ink, and a name colour bought in the store keeps its colour
-   (paid content, 1.1.2 / 1.1.3). The one red is a mark: the torn ribbon at the start of a line from
+   Colour: a channel is told by its word, not a hue. Every rank (staff and the store's VIP tiers) is
+   the same paper chip and every name is in the one ink (owner 2026-11-12: no coloured names or
+   tier colours). The one red is a mark: the torn ribbon at the start of a line from
    the staff or a line another script sent as an error. Never red letters, never a red slab.
    ============================================================================ */
 
@@ -126,7 +126,7 @@
 .chat-badge[dir="ltr"] { font-family: 'EB Garamond', Georgia, serif; font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-size: 0.84rem; }
 .chat-badge[dir="rtl"] { font-weight: 700; letter-spacing: 0; }
 
-/* a staff rank: a paper chip; a VIP tier from the store (w_vip): the chip in the tier's own colours */
+/* a rank (staff or a VIP tier from the store): the same paper chip for all */
 .chat-badge.chat-rank-badge {
   align-self: center;
   padding: 0.04rem 0.4rem 0.08rem;
@@ -136,12 +136,6 @@
   line-height: 1.2;
 }
 .chat-badge.chat-rank-badge[dir="ltr"] { font-size: 0.8rem; }
-.chat-badge.chat-rank-badge[data-tier] {
-  border-color: var(--rank-band, var(--paper));
-  background: var(--rank-band, var(--paper));
-  color: var(--rank-ink, var(--ink));
-}
-
 .chat-sender {
   min-width: 0;
   overflow: hidden;
@@ -152,8 +146,6 @@
 }
 [dir="rtl"] .chat-sender { font-weight: 700; }
 /* 1.1.3: a name colour bought in the server store keeps its colour (1.2.0: no glow) */
-.chat-sender-store { font-weight: 700; }
-
 .chat-time {
   flex: none;
   margin-inline-start: auto;
