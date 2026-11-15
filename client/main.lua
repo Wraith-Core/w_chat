@@ -89,7 +89,8 @@ RegisterCommand('openChat', function()
     end
 end, false)
 
-RegisterKeyMapping('openChat', 'فتح الشات (Red River Chat)', 'keyboard', Config.DefaultKey or 'T')
+-- English on purpose (owner 2026-11-15): the game's key-binding page draws Latin only, Arabic came out as boxes
+RegisterKeyMapping('openChat', 'Open chat', 'keyboard', Config.DefaultKey or 'T')
 
 -- استقبال رد الشات من واجهة NUI
 RegisterNUICallback('chatResult', function(data, cb)
