@@ -1,35 +1,13 @@
-local WCore = nil
-
--- the QB-shaped core (Wraith Core or RSG) through w_lib; VORP has none (its core has no Functions table), so there
--- WCore stays nil and the name and job come from w_lib's framework module (2026-10-28, VORP / RSG support)
-CreateThread(function()
-    for _ = 1, 150 do
-        local ok, core = pcall(function() return w.framework:getCoreObject() end)
-        if ok and type(core) == 'table' and type(core.Functions) == 'table' and core.Functions.GetPlayer then
-            WCore = core
-            return
-        end
-        Wait(200)
-    end
-end)
-
--- دالة مساعدة للحصول على اسم الشخصية
+-- دالة مساعدة للحصول على اسم الشخصية عبر w_lib
 local function getPlayerDisplayName(source)
-    if w and w.framework then
-        local name = w.framework:getCharacterName(source)
-        if name and name ~= '' and name ~= ' ' then
-            return name
-        end
+    local ok, name = pcall(function() return exports.w_lib:FwGetCharacterName(source) end)
+    if ok and type(name) == 'string' and name ~= '' and name ~= ' ' then
+        return name
     end
-    if WCore then
-        local Player = WCore.Functions.GetPlayer(source)
-        if Player and Player.PlayerData and Player.PlayerData.charinfo then
-            local info = Player.PlayerData.charinfo
-            local fname = info.firstname or ''
-            local lname = info.lastname or ''
-            if fname ~= '' or lname ~= '' then
-                return (fname .. ' ' .. lname):gsub('^%s*(.-)%s*$', '%1')
-            end
+    if w and w.framework then
+        local wname = w.framework:getCharacterName(source)
+        if wname and wname ~= '' and wname ~= ' ' then
+            return wname
         end
     end
     return GetPlayerName(source) or ('Player %s'):format(source)
@@ -47,34 +25,25 @@ local function chatId(source)
     return ('#%s'):format(source)
 end
 
--- فحص الصلاحيات الإدارية
+-- فحص الصلاحيات الإدارية عبر w_lib
 local function isPlayerAdmin(source)
     if source == 0 then return true end
-    if IsPlayerAceAllowed(source, 'command') or IsPlayerAceAllowed(source, 'wcore.admin') or IsPlayerAceAllowed(source, 'admin') then
-        return true
-    end
-    if WCore then
-        local Player = WCore.Functions.GetPlayer(source)
-        if Player and (Player.PlayerData.permission == 'admin' or Player.PlayerData.permission == 'god') then
-            return true
-        end
-    end
-    return false
+    local ok, allowed = pcall(function() return exports.w_lib:FwHasPermission(source, 'admin') end)
+    if ok and allowed == true then return true end
+    local okAdm, isAdm = pcall(function() return exports.w_lib:IsAdmin(source) end)
+    return okAdm and isAdm == true
 end
 
--- فحص وظيفة اللاعب
+-- فحص وظيفة اللاعب عبر w_lib
 local function hasPlayerJob(source, jobName)
-    if WCore then
-        local Player = WCore.Functions.GetPlayer(source)
-        if Player and Player.PlayerData and Player.PlayerData.job then
-            return Player.PlayerData.job.name == jobName
-        end
-        return false
+    local ok, job = pcall(function() return exports.w_lib:FwGetJob(source) end)
+    if ok and type(job) == 'string' and job ~= '' then
+        return job == jobName
     end
-    local ok, user = pcall(function() return w.framework:getUser(source) end)
-    if ok and user and user.getJob then
-        local okJob, job = pcall(function() return user:getJob() end)
-        return okJob and job == jobName
+    local okU, user = pcall(function() return w.framework:getUser(source) end)
+    if okU and user and user.getJob then
+        local okJob, ujob = pcall(function() return user:getJob() end)
+        return okJob and ujob == jobName
     end
     return false
 end
@@ -88,6 +57,11 @@ local function nameColorOf(source)
     return nil
 end
 
+local function hasRankPerm(source, rankName)
+    local ok, res = pcall(function() return exports.w_lib:FwHasPermission(source, rankName) end)
+    return ok and res == true
+end
+
 local function getPlayerRank(source)
     if source == 0 then
         if Config.Ranks and Config.Ranks.god then
@@ -98,20 +72,20 @@ local function getPlayerRank(source)
     end
     if not Config.Ranks then return nil end
 
-    if IsPlayerAceAllowed(source, 'wcore.god') or IsPlayerAceAllowed(source, 'god') then
+    if hasRankPerm(source, 'god') then
         local r = Config.Ranks.god or {}
         return { name = 'god', label = r.label or 'مطور', color = r.color or '#F2F2F2', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-crown' }
     end
-    if IsPlayerAceAllowed(source, 'wcore.admin') or IsPlayerAceAllowed(source, 'admin') then
+    if hasRankPerm(source, 'admin') then
         local r = Config.Ranks.admin or {}
         return { name = 'admin', label = r.label or 'إدارة', color = r.color or '#F2F2F2', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-shield-halved' }
     end
-    if IsPlayerAceAllowed(source, 'wcore.mod') or IsPlayerAceAllowed(source, 'mod') then
+    if hasRankPerm(source, 'mod') then
         local r = Config.Ranks.mod or {}
         return { name = 'mod', label = r.label or 'مشرف', color = r.color or '#F2F2F2', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-user-shield' }
     end
     -- 1.1.2: a VIP tier from the store (w_vip) wears its own colours; the staff above keep precedence and
-    -- the plain VIP badge below stays for a 'wcore.vip' given by hand
+    -- the plain VIP badge below stays for a vip permission given by hand
     local tier = 0
     if GetResourceState('w_vip') == 'started' then
         local ok, t = pcall(function() return exports.w_vip:Tier(source) end)
@@ -122,20 +96,15 @@ local function getPlayerRank(source)
         local r = Config.Ranks[tierKey]
         return { name = tierKey, label = r.label, color = r.color, bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon, tier = tier }
     end
-    if IsPlayerAceAllowed(source, 'wcore.vip') or IsPlayerAceAllowed(source, 'vip') then
+    if hasRankPerm(source, 'vip') then
         local r = Config.Ranks.vip or {}
         return { name = 'vip', label = r.label or 'VIP', color = r.color or '#F2F2F2', bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon or 'fa-star' }
     end
 
-    if WCore then
-        local Player = WCore.Functions.GetPlayer(source)
-        if Player and Player.PlayerData then
-            local perm = Player.PlayerData.permission
-            if perm and Config.Ranks[perm] then
-                local r = Config.Ranks[perm]
-                return { name = perm, label = r.label, color = r.color, bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon }
-            end
-        end
+    local okGrp, perm = pcall(function() return exports.w_lib:GetPlayerGroup(source) end)
+    if okGrp and perm and Config.Ranks[perm] then
+        local r = Config.Ranks[perm]
+        return { name = perm, label = r.label, color = r.color, bgColor = r.bgColor, borderColor = r.borderColor, icon = r.icon }
     end
     return nil
 end
